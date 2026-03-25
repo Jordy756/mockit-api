@@ -1,8 +1,14 @@
-// src/server.ts
-import { app } from "./app.ts";
 
-const PORT = process.env.PORT ?? 3000;
+import express from "express";
 
-app.listen(PORT, () => {
-  console.log(`Listening on http://localhost:${PORT}`);
-});
+export class Server {
+  private readonly app = express();
+
+  constructor() {}
+
+  public start(port: number) {
+    this.app.listen(port, () => {
+      console.log(`Server is running on http://localhost:${port}`);
+    });
+  }
+}

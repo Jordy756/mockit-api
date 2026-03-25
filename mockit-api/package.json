@@ -5,7 +5,9 @@
   "main": "src/server.ts",
   "scripts": {
     "type-check": "tsc --noEmit",
-    "dev": "node --watch src/server.ts"
+    "dev": "node --watch src/server.ts",
+    "build": "rimraf build && tsc",
+    "start": "node build/server.js"
   },
   "keywords": [],
   "author": "",

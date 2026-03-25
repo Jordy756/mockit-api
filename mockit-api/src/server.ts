@@ -1,7 +1,8 @@
-import app from "./app";
+// src/server.ts
+import { app } from "./app.ts";
 
 const PORT = process.env.PORT ?? 3000;
 
 app.listen(PORT, () => {
-  console.log(`API Mock backend listening on port http://localhost:${PORT}`);
+  console.log(`Listening on http://localhost:${PORT}`);
 });

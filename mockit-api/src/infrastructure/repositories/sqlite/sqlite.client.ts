@@ -26,18 +26,10 @@ export class SqliteClient {
   private bootstrap() {
     this.sqlite.exec(`
       CREATE TABLE IF NOT EXISTS mock_definitions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE,
-        method TEXT NOT NULL,
-        path TEXT NOT NULL,
-        status_code INTEGER NOT NULL,
-        response_body TEXT NOT NULL,
-        headers TEXT NOT NULL,
-        delay_ms INTEGER NOT NULL DEFAULT 0,
-        is_active INTEGER NOT NULL DEFAULT 1,
+        id TEXT PRIMARY KEY,
+        payload TEXT NOT NULL,
         created_at INTEGER NOT NULL,
-        updated_at INTEGER NOT NULL,
-        CONSTRAINT mock_method_path_unique_idx UNIQUE (method, path)
+        updated_at INTEGER NOT NULL
       );
     `);
   }

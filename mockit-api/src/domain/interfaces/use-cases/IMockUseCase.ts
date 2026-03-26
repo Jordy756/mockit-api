@@ -1,5 +1,6 @@
-import type { Mock, NewMockDefinitionProps } from "../../entities/Mock.js";
+import type { Mock, JsonValue } from "../../entities/Mock.js";
 
 export interface IMockUseCase {
-  register(input: NewMockDefinitionProps): Promise<Mock>;
+  register(payload: JsonValue): Promise<Mock>;
+  list(): Promise<Mock[]>;
 }

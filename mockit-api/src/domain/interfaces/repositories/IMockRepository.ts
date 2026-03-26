@@ -1,6 +1,6 @@
-import type { Mock, NewMockDefinitionProps } from "../../entities/Mock.js";
+import type { Mock } from "../../entities/Mock.js";
 
 export interface IMockRepository {
-  register(input: NewMockDefinitionProps): Promise<Mock>;
+  register(mock: Mock): Promise<Mock>;
   list(): Promise<Mock[]>;
 }

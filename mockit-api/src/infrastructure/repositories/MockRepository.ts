@@ -1,7 +1,4 @@
-import { randomUUID } from "node:crypto";
-
 import { Mock } from "../../domain/entities/Mock.js";
-import type { MockDefinitionProps, NewMockDefinitionProps } from "../../domain/entities/Mock.js";
 import type { IMockRepository } from "../../domain/interfaces/repositories/IMockRepository.js";
 import { mockDefinitionsTable, type MockDefinitionRow } from "./sqlite/schema/mock.schema.js";
 import type { SqliteClient } from "./sqlite/sqlite.client.js";
@@ -9,23 +6,14 @@ import type { SqliteClient } from "./sqlite/sqlite.client.js";
 export class MockRepository implements IMockRepository {
   constructor(private readonly sqliteClient: SqliteClient) {}
 
-  public async register(input: NewMockDefinitionProps) {
-    const mockId = randomUUID();
-    const now = new Date();
-
+  public async register(mock: Mock) {
     const rows = await this.sqliteClient.db
       .insert(mockDefinitionsTable)
       .values({
-        name: mockId,
-        method: "GET",
-        path: `/api/mocks/${mockId}`,
-        statusCode: 200,
-        responseBody: input.payload,
-        headers: {},
-        delayMs: 0,
-        isActive: true,
-        createdAt: now,
-        updatedAt: now,
+        id: mock.id,
+        payload: mock.payload,
+        createdAt: mock.createdAt,
+        updatedAt: mock.updatedAt,
       })
       .returning();
 
@@ -44,13 +32,12 @@ export class MockRepository implements IMockRepository {
   }
 
   private toDomain(row: MockDefinitionRow) {
-    const props: MockDefinitionProps = {
-      id: row.name,
-      payload: row.responseBody,
+    const mock = new Mock(row.payload);
+    // Reconstruct from DB data with persisted timestamps and id
+    return Object.assign(mock, {
+      id: row.id,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
-    };
-
-    return new Mock(props);
+    }) as Mock;
   }
 }

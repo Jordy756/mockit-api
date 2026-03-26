@@ -22,9 +22,9 @@ export class Server {
 
     const sqliteClient = new SqliteClient();
     const mockRepository = new MockRepository(sqliteClient);
-    const registerMockUseCase = new MockUseCase(mockRepository);
+    const mockUseCase = new MockUseCase(mockRepository);
 
-    this.mockController = new MockController(registerMockUseCase);
+    this.mockController = new MockController(mockUseCase);
   }
 
   public start() {

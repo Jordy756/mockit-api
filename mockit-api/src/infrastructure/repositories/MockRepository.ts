@@ -6,14 +6,14 @@ import type { SqliteClient } from "./sqlite/sqlite.client.js";
 export class MockRepository implements IMockRepository {
   constructor(private readonly sqliteClient: SqliteClient) {}
 
-  public async register(mock: Mock) {
+  public async register({ id, payload, createdAt, updatedAt }: Mock) {
     const rows = await this.sqliteClient.db
       .insert(mockDefinitionsTable)
       .values({
-        id: mock.id,
-        payload: mock.payload,
-        createdAt: mock.createdAt,
-        updatedAt: mock.updatedAt,
+        id,
+        payload,
+        createdAt,
+        updatedAt,
       })
       .returning();
 
@@ -33,7 +33,6 @@ export class MockRepository implements IMockRepository {
 
   private toDomain(row: MockDefinitionRow) {
     const mock = new Mock(row.payload);
-    // Reconstruct from DB data with persisted timestamps and id
     return Object.assign(mock, {
       id: row.id,
       createdAt: row.createdAt,

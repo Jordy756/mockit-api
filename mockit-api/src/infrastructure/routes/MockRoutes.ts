@@ -6,7 +6,7 @@ export const createMockRoutes = (mockController: MockController) => {
   const router = Router();
 
   router.post("/", mockController.register);
-  router.get("/", (req, res) => mockController.list(req, res));
+  router.get("/", mockController.list);
 
   return router;
 };

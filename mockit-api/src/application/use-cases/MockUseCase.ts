@@ -6,13 +6,13 @@ import type { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCas
 export class MockUseCase implements IMockUseCase {
   constructor(private readonly mockRepository: IMockRepository) {}
 
-  public async register(payload: JsonValue) {
+  public async register(payload: JsonValue): Promise<Mock> {
     const newMock = new Mock(payload);
-
+    
     return this.mockRepository.register(newMock);
   }
 
-  public async list() {
+  public async list(): Promise<Mock[]> {
     return this.mockRepository.list();
   }
 }

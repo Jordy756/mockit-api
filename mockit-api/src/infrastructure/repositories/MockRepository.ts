@@ -19,9 +19,7 @@ export class MockRepository implements IMockRepository {
 
     const row = rows[0];
 
-    if (row === undefined) {
-      throw new Error("Failed to persist mock definition");
-    }
+    if (row === undefined) throw new Error("Failed to persist mock definition");
 
     return this.toDomain(row);
   }

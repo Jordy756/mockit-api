@@ -7,6 +7,8 @@ export class MockUseCase implements IMockUseCase {
   constructor(private readonly mockRepository: IMockRepository) {}
 
   public async register(payload: JsonValue): Promise<Mock> {
+    // Consumir un servicio que genere los datos y todo lo demas queda igual
+
     const newMock = new Mock(payload);
     
     return this.mockRepository.register(newMock);

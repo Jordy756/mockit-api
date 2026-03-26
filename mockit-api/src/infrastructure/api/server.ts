@@ -1,4 +1,5 @@
 import express, { json } from "express";
+import cors from "cors";
 
 interface Options {
   port?: number;
@@ -16,7 +17,7 @@ export class Server {
 
   public start() {
     this.app.use(json());
-
+    this.app.use(cors());
     this.app.listen(this.port, () => {
       console.log(`Server is running on http://localhost:${this.port}`);
     });

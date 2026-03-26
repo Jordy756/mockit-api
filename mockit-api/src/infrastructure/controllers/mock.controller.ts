@@ -1,0 +1,39 @@
+import type { Request, Response } from "express";
+import { ZodError } from "zod";
+
+import { MockMapper } from "../../application/mappers/mock.mapper.js";
+import { registerMockInputSchema, registerMockResponseSchema } from "../../application/dtos/register-mock.input.js";
+import type { IRegisterMockUseCase } from "../../domain/interfaces/use-cases/register-mock.use-case.js";
+
+export class MockController {
+  constructor(private readonly registerMockUseCase: IRegisterMockUseCase) {}
+
+  public register = async (req: Request, res: Response) => {
+    try {
+      const input = registerMockInputSchema.parse(req.body);
+      const mock = await this.registerMockUseCase.execute(MockMapper.toNewDomain(input));
+
+      const response = registerMockResponseSchema.parse(MockMapper.toResponse(mock));
+      res.status(201).json(response);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({
+          message: "Invalid payload",
+          errors: error.issues,
+        });
+        return;
+      }
+
+      if (error instanceof Error && error.message.includes("already exists")) {
+        res.status(409).json({
+          message: error.message,
+        });
+        return;
+      }
+
+      res.status(500).json({
+        message: "Unexpected error while registering mock",
+      });
+    }
+  };
+}

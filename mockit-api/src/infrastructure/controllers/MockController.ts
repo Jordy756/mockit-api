@@ -6,14 +6,15 @@ import { registerMockInputSchema, registerMockResponseSchema } from "../../appli
 import type { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
 
 export class MockController {
-  constructor(private readonly registerMockUseCase: IMockUseCase) {}
+  constructor(private readonly mockUseCase: IMockUseCase) {}
 
   public register = async (req: Request, res: Response) => {
     try {
       const input = registerMockInputSchema.parse(req.body);
-      const mock = await this.registerMockUseCase.execute(MockMapper.toNewDomain(input));
+      const mock = await this.mockUseCase.register(MockMapper.toMock(input));
 
-      const response = registerMockResponseSchema.parse(MockMapper.toResponse(mock));
+      const response = registerMockResponseSchema.parse(MockMapper.toMockDTO(mock));
+
       res.status(201).json(response);
     } catch (error) {
       if (error instanceof ZodError) {

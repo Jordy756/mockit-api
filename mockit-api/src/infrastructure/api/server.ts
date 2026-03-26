@@ -1,8 +1,8 @@
 import express, { json } from "express";
 import cors from "cors";
-import { RegisterMockUseCase } from "../../application/use-cases/MockUseCase.js";
+import { MockUseCase } from "../../application/use-cases/MockUseCase.js";
 import { MockController } from "../controllers/MockController.js";
-import { DrizzleMockRepository } from "../repositories/MockRepository.js";
+import { MockRepository } from "../repositories/MockRepository.js";
 import { SqliteClient } from "../repositories/sqlite/sqlite.client.js";
 import { createMockRoutes } from "../routes/MockRoutes.js";
 
@@ -21,13 +21,14 @@ export class Server {
     this.port = port;
 
     const sqliteClient = new SqliteClient();
-    const mockRepository = new DrizzleMockRepository(sqliteClient);
-    const registerMockUseCase = new RegisterMockUseCase(mockRepository);
+    const mockRepository = new MockRepository(sqliteClient);
+    const registerMockUseCase = new MockUseCase(mockRepository);
 
     this.mockController = new MockController(registerMockUseCase);
   }
 
   public start() {
+    this.app.disable("x-powered-by");
     this.app.use(json());
     this.app.use(cors());
     this.app.use("/api/mocks", createMockRoutes(this.mockController));

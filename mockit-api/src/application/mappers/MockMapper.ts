@@ -1,5 +1,5 @@
-import type { MockDefinition, NewMockDefinitionProps } from "../../domain/entities/mock.entity.js";
-import type { RegisterMockInput, RegisterMockResponse } from "../dtos/register-mock.input.js";
+import type { MockDefinition, NewMockDefinitionProps } from "../../domain/entities/Mock.js";
+import type { RegisterMockInput, RegisterMockResponse } from "../dtos/MockDTO.js";
 
 export class MockMapper {
   public static toNewDomain(input: RegisterMockInput): NewMockDefinitionProps {

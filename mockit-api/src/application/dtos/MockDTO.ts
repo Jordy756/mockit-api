@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { HTTP_METHOD, type JsonValue } from "../../domain/entities/mock.entity.js";
+import { HTTP_METHOD, type JsonValue } from "../../domain/entities/Mock.js";
 
 const jsonValueSchema: z.ZodType<JsonValue> = z.lazy(() =>
   z.union([

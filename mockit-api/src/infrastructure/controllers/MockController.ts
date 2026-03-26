@@ -1,12 +1,12 @@
 import type { Request, Response } from "express";
 import { ZodError } from "zod";
 
-import { MockMapper } from "../../application/mappers/mock.mapper.js";
-import { registerMockInputSchema, registerMockResponseSchema } from "../../application/dtos/register-mock.input.js";
-import type { IRegisterMockUseCase } from "../../domain/interfaces/use-cases/register-mock.use-case.js";
+import { MockMapper } from "../../application/mappers/MockMapper.js";
+import { registerMockInputSchema, registerMockResponseSchema } from "../../application/dtos/MockDTO.js";
+import type { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
 
 export class MockController {
-  constructor(private readonly registerMockUseCase: IRegisterMockUseCase) {}
+  constructor(private readonly registerMockUseCase: IMockUseCase) {}
 
   public register = async (req: Request, res: Response) => {
     try {

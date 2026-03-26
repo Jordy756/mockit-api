@@ -1,9 +1,9 @@
-import { MockDefinition } from "../../domain/entities/mock.entity.js";
-import type { NewMockDefinitionProps } from "../../domain/entities/mock.entity.js";
-import type { IMockRepository } from "../../domain/interfaces/repositories/mock.repository.js";
-import type { IRegisterMockUseCase } from "../../domain/interfaces/use-cases/register-mock.use-case.js";
+import { MockDefinition } from "../../domain/entities/Mock.js";
+import type { NewMockDefinitionProps } from "../../domain/entities/Mock.js";
+import type { IMockRepository } from "../../domain/interfaces/repositories/IMockRepository.js";
+import type { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
 
-export class RegisterMockUseCase implements IRegisterMockUseCase {
+export class RegisterMockUseCase implements IMockUseCase {
   constructor(private readonly mockRepository: IMockRepository) {}
 
   public async execute(input: NewMockDefinitionProps) {

@@ -1,6 +1,6 @@
 import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
-import type { JsonValue } from "../../../../domain/entities/mock.entity.js";
+import type { JsonValue } from "../../../../domain/entities/Mock.js";
 
 export const mockDefinitionsTable = sqliteTable(
   "mock_definitions",

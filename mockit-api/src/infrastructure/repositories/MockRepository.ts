@@ -1,8 +1,8 @@
 import { and, eq } from "drizzle-orm";
 
-import { MockDefinition } from "../../domain/entities/mock.entity.js";
-import type { HttpMethod, MockDefinitionProps, NewMockDefinitionProps } from "../../domain/entities/mock.entity.js";
-import type { IMockRepository } from "../../domain/interfaces/repositories/mock.repository.js";
+import { MockDefinition } from "../../domain/entities/Mock.js";
+import type { HttpMethod, MockDefinitionProps, NewMockDefinitionProps } from "../../domain/entities/Mock.js";
+import type { IMockRepository } from "../../domain/interfaces/repositories/IMockRepository.js";
 import { mockDefinitionsTable, type MockDefinitionRow } from "./sqlite/schema/mock.schema.js";
 import type { SqliteClient } from "./sqlite/sqlite.client.js";
 

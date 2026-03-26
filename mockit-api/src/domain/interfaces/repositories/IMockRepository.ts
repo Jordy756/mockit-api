@@ -1,4 +1,4 @@
-import type { HttpMethod, MockDefinition, NewMockDefinitionProps } from "../../entities/mock.entity.js";
+import type { HttpMethod, MockDefinition, NewMockDefinitionProps } from "../../entities/Mock.js";
 
 export interface IMockRepository {
   create(input: NewMockDefinitionProps): Promise<MockDefinition>;

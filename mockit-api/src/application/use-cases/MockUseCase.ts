@@ -5,17 +5,17 @@ import type { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCas
 
 export class MockUseCase implements IMockUseCase {
   constructor(
-    private readonly mockRepository: ITemplateRepository,
-    private readonly mockStateRepository: IMockRepository,
+    private readonly templateRepository: ITemplateRepository,
+    private readonly mockRepository: IMockRepository,
   ) {}
 
   public async insert(mockId: string, payload: JsonValue): Promise<MockStateRecord> {
     // return this.mockStateRepository.insert(newState);
-    return await this.mockStateRepository.upsertBySimulationId(mockId, payload);
+    return await this.mockRepository.upsertBySimulationId(mockId, payload);
   }
 
   public async getAll(mockId: string): Promise<MockStateRecord> {
-    return await this.mockStateRepository.getBySimulationId(mockId).then((record) => {
+    return await this.mockRepository.getBySimulationId(mockId).then((record) => {
       if (!record) {
         throw new Error(`Mock state with id ${mockId} not found`);
       }

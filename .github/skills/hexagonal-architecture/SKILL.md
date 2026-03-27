@@ -15,9 +15,7 @@ metadata:
 - Building a use-case or application service
 - Implementing a repository or data access layer
 - Structuring controllers and routes
-- Anything backend-related (see mockit-api/AGENTS.md)
-
----
+- Anything backend-related in mockit-api (see mockit-api/AGENTS.md)
 
 ## Critical Patterns
 
@@ -37,26 +35,40 @@ Infrastructure (Framework-Specific - Express, DB, HTTP)
 - Application: use-cases, mappers (orchestrates domain + infrastructure)
 - Infrastructure: controllers, repositories, Express routes
 
+### Use-Case Organization by Entity (Project Convention)
+
+In this project, use-cases are grouped by entity, not split by HTTP method.
+
+- ✅ Preferred: one class per entity (example: MockUseCase) with multiple operations
+- ✅ Example methods in one class: register, list, create, update, remove
+- ❌ Avoid creating one use-case class per HTTP verb when all methods belong to the same aggregate
+
+This keeps business logic for one entity together and matches current code in mockit-api.
+
 ### Domain: Pure Interfaces & Entities
 
 ```typescript
-// ✅ domain/entities/user.entity.ts
-export interface User {
-  id: string;
-  email: string;
-  name: string;
+// ✅ src/domain/entities/Mock.ts
+export type JsonPrimitive = string | number | boolean | null;
+export type JsonValue = JsonPrimitive | { [key: string]: JsonValue } | JsonValue[];
+
+export class Mock {
+  public readonly id: string;
+  public readonly payload: JsonValue;
   createdAt: Date;
+  updatedAt: Date;
 }
 
-// ✅ domain/interfaces/use-cases/create-user.ts (PORT)
-export interface ICreateUserUseCase {
-  execute(input: { email: string; name: string }): Promise<User>;
+// ✅ src/domain/interfaces/use-cases/IMockUseCase.ts (PORT)
+export interface IMockUseCase {
+  register(payload: JsonValue): Promise<Mock>;
+  list(): Promise<Mock[]>;
 }
 
-// ✅ domain/interfaces/repositories/user.repository.ts (PORT)
-export interface IUserRepository {
-  findById(id: string): Promise<User | null>;
-  save(user: User): Promise<void>;
+// ✅ src/domain/interfaces/repositories/IMockRepository.ts (PORT)
+export interface IMockRepository {
+  register(mock: Mock): Promise<Mock>;
+  list(): Promise<Mock[]>;
 }
 
 // ❌ NEVER: Import Express, Zod, or concrete classes
@@ -66,30 +78,22 @@ export interface IUserRepository {
 ### Application: Pure Use Case Logic
 
 ```typescript
-// ✅ application/use-cases/create-user.use-case.ts (INTERACTOR)
-import { User } from "../../domain/entities/user.entity";
-import { IUserRepository } from "../../domain/interfaces/repositories/user.repository";
+// ✅ src/application/use-cases/MockUseCase.ts (INTERACTOR)
+import { Mock } from "../../domain/entities/Mock.js";
+import type { JsonValue } from "../../domain/entities/Mock.js";
+import type { IMockRepository } from "../../domain/interfaces/repositories/IMockRepository.js";
+import type { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
 
-export class CreateUserUseCase {
-  constructor(private userRepository: IUserRepository) {}
+export class MockUseCase implements IMockUseCase {
+  constructor(private readonly mockRepository: IMockRepository) {}
 
-  async execute(input: { email: string; name: string }): Promise<User> {
-    // 1. Validate business rules
-    const existingUser = await this.userRepository.findById(input.email);
-    if (existingUser) throw new Error("User already exists");
+  public async register(payload: JsonValue): Promise<Mock> {
+    const newMock = new Mock(payload);
+    return this.mockRepository.register(newMock);
+  }
 
-    // 2. Create domain entity
-    const user: User = {
-      id: generateId(),
-      email: input.email,
-      name: input.name,
-      createdAt: new Date(),
-    };
-
-    // 3. Persist via repository interface (abstracted)
-    await this.userRepository.save(user);
-
-    return user;
+  public async list(): Promise<Mock[]> {
+    return this.mockRepository.list();
   }
 }
 
@@ -100,47 +104,48 @@ export class CreateUserUseCase {
 ### Infrastructure: Express Controller (ADAPTER)
 
 ```typescript
-// ✅ infrastructure/controllers/user.controller.ts
-import express from "express";
-import { CreateUserUseCase } from "../../application/use-cases/create-user.use-case";
-import { CreateUserInputSchema } from "../../application/dtos/create-user.input";
-import { UserMapper } from "../../application/mappers/user.mapper";
+// ✅ src/infrastructure/controllers/MockController.ts
+import type { Request, Response } from "express";
+import { ZodError } from "zod";
+import { MockMapper } from "../../application/mappers/MockMapper.js";
+import { registerMockInputSchema } from "../../application/dtos/MockDTO.js";
+import type { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
 
-export class UserController {
-  constructor(private createUserUseCase: CreateUserUseCase) {}
+export class MockController {
+  constructor(private readonly mockUseCase: IMockUseCase) {}
 
-  async create(req: express.Request, res: express.Response) {
+  public register = async (req: Request, res: Response): Promise<void> => {
     try {
-      // 1. Validate input at HTTP boundary (Zod)
-      const input = CreateUserInputSchema.parse(req.body);
-
-      // 2. Call pure use-case
-      const user = await this.createUserUseCase.execute(input);
-
-      // 3. Map to DTO for response
-      const dto = UserMapper.toDTO(user);
-
-      res.status(201).json(dto);
+      const input = registerMockInputSchema.parse(req.body);
+      const payload = MockMapper.toPayload(input);
+      const mock = await this.mockUseCase.register(payload);
+      res.status(201).json(MockMapper.toMockDTO(mock));
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      if (error instanceof ZodError) {
+        res.status(400).json({ message: "Invalid payload", errors: error.issues });
+        return;
+      }
+
+      res.status(500).json({ message: "Unexpected error while registering mock" });
     }
-  }
+  };
 }
 
-// ✅ infrastructure/repositories/user.repository.ts (ADAPTER)
-import { User } from "../../domain/entities/user.entity";
-import { IUserRepository } from "../../domain/interfaces/repositories/user.repository";
+// ✅ src/infrastructure/repositories/MockRepository.ts (ADAPTER)
+import { Mock } from "../../domain/entities/Mock.js";
+import type { IMockRepository } from "../../domain/interfaces/repositories/IMockRepository.js";
+import type { SqliteClient } from "./sqlite/sqlite.client.js";
 
-export class UserRepository implements IUserRepository {
-  // Connect to real database (PostgreSQL, MongoDB, etc.)
-  async findById(id: string): Promise<User | null> {
-    // SELECT * FROM users WHERE id = id
-    return database.query("SELECT * FROM users WHERE id = ?", [id]);
+export class MockRepository implements IMockRepository {
+  constructor(private readonly sqliteClient: SqliteClient) {}
+
+  public async register(mock: Mock): Promise<Mock> {
+    // Persist with sqlite client and map row -> domain
+    return mock;
   }
 
-  async save(user: User): Promise<void> {
-    // INSERT INTO users (...)
-    await database.query("INSERT INTO users (...) VALUES (...)", [user]);
+  public async list(): Promise<Mock[]> {
+    return [];
   }
 }
 ```
@@ -148,64 +153,45 @@ export class UserRepository implements IUserRepository {
 ### Dependency Injection (Wire at Root)
 
 ```typescript
-// ✅ infrastructure/api/server.ts
-import express from "express";
-import { UserRepository } from "../repositories/user.repository";
-import { CreateUserUseCase } from "../../application/use-cases/create-user.use-case";
-import { UserController } from "../controllers/user.controller";
+// ✅ src/infrastructure/api/server.ts
+const sqliteClient = new SqliteClient();
+const mockRepository = new MockRepository(sqliteClient);
+const mockUseCase = new MockUseCase(mockRepository);
+const mockController = new MockController(mockUseCase);
 
-const app = express();
-
-// 1. Create repository (implements IUserRepository)
-const userRepository = new UserRepository();
-
-// 2. Inject into use-case
-const createUserUseCase = new CreateUserUseCase(userRepository);
-
-// 3. Inject use-case into controller
-const userController = new UserController(createUserUseCase);
-
-// 4. Wire to route
-app.post("/users", (req, res) => userController.create(req, res));
-
-export function startServer(port: number) {
-  app.listen(port, () => console.log(`Server on port ${port}`));
-}
+this.app.use("/api/mocks", createMockRoutes(mockController));
 ```
 
 ### DTO & Mapper (Data Transformation)
 
 ```typescript
-// ✅ application/dtos/create-user.input.ts
+// ✅ src/application/dtos/MockDTO.ts
 import { z } from "zod";
+import type { JsonValue } from "../../domain/entities/Mock.js";
 
-export const CreateUserInputSchema = z.object({
-  email: z.string().email("Invalid email"),
-  name: z.string().min(1, "Name required"),
-});
+const jsonValueSchema: z.ZodType<JsonValue> = z.lazy(() =>
+  z.union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.null(),
+    z.array(jsonValueSchema),
+    z.record(z.string(), jsonValueSchema),
+  ]),
+);
 
-export type CreateUserInput = z.infer<typeof CreateUserInputSchema>;
+export const registerMockInputSchema = jsonValueSchema;
 
-// ✅ application/mappers/user.mapper.ts
-import { User } from "../../domain/entities/user.entity";
+// ✅ src/application/mappers/MockMapper.ts
+import type { Mock } from "../../domain/entities/Mock.js";
 
-export class UserMapper {
-  // Domain → DTO (for HTTP response)
-  static toDTO(user: User) {
+export class MockMapper {
+  public static toMockDTO({ id, payload, createdAt, updatedAt }: Mock) {
     return {
-      id: user.id,
-      email: user.email,
-      displayName: user.name,
-    };
-  }
-
-  // Raw DB row → Domain (for persistence)
-  static toDomain(raw: any): User {
-    return {
-      id: raw.id,
-      email: raw.email,
-      name: raw.name,
-      createdAt: raw.created_at,
+      id,
+      payload,
+      createdAt: createdAt.toISOString(),
+      updatedAt: updatedAt.toISOString(),
     };
   }
 }
@@ -215,12 +201,12 @@ export class UserMapper {
 
 ## Benefits
 
-| Benefit         | How                                                         | Example                                              |
-| --------------- | ----------------------------------------------------------- | ---------------------------------------------------- |
-| **Testability** | Domain logic doesn't need Express/DB mocks                  | `new CreateUserUseCase(mockRepository).execute(...)` |
-| **Flexibility** | Swap DB from PostgreSQL → MongoDB without changing use-case | Implement `IUserRepository` for MongoDB              |
-| **Reusability** | One use-case for HTTP + CLI + GraphQL                       | Same `CreateUserUseCase`, different adapters         |
-| **Clarity**     | Each layer has one responsibility                           | Domain = rules, Infrastructure = Express             |
+| Benefit         | How                                         | Example                                         |
+| --------------- | ------------------------------------------- | ----------------------------------------------- |
+| **Testability** | Domain logic doesn't need Express/DB mocks  | `new MockUseCase(mockRepository).list()`        |
+| **Flexibility** | Swap DB adapter without changing use-case   | Implement `IMockRepository` for another DB      |
+| **Reusability** | One use-case per entity for many operations | Same `MockUseCase` handles register/list/update |
+| **Clarity**     | Each layer has one responsibility           | Domain = rules, Infrastructure = Express        |
 
 ---
 
@@ -228,16 +214,16 @@ export class UserMapper {
 
 ```bash
 # Scaffold new entity
-mkdir -p src/domain/entities
-# Then: domain/entities/{entity}.entity.ts + interfaces/repositories/{entity}.repository.ts
+mkdir -p src/domain/entities src/domain/interfaces/repositories src/domain/interfaces/use-cases
+# Then: {Entity}.ts + I{Entity}Repository.ts + I{Entity}UseCase.ts
 
 # Scaffold new use-case
 mkdir -p src/application/use-cases
-# Then: application/use-cases/{action}-{entity}.use-case.ts
+# Then: {Entity}UseCase.ts (group methods by entity: create/list/update/delete)
 
 # Scaffold controller & repository
 mkdir -p src/infrastructure/controllers src/infrastructure/repositories
-# Then: infrastructure/controllers/{entity}.controller.ts + repositories/{entity}.repository.ts
+# Then: {Entity}Controller.ts + {Entity}Repository.ts + routes/{Entity}Routes.ts
 ```
 
 ---
@@ -249,17 +235,17 @@ mkdir -p src/infrastructure/controllers src/infrastructure/repositories
 import express from "express";  // NO!
 import { database } from "./db"; // NO!
 
-// ❌ Database entities = domain entities
-interface User extends TypeORM.Entity { }  // NO! Use your own interface
+// ❌ One use-case class per HTTP method (project convention)
+class CreateMockUseCase {} // NO: prefer one MockUseCase per entity
 
 // ❌ Mixing HTTP concerns in use-cases
 function execute(req: express.Request, res: express.Response) { }  // NO!
 
 // ❌ No interfaces (tight coupling)
-constructor(userRepository: UserRepository) { }  // NO! Use IUserRepository
+constructor(mockRepository: MockRepository) { }  // NO! Use IMockRepository
 
 // ❌ Validation in domain
-if (!email.includes("@")) throw new Error();  // Put in DTO + Zod instead
+if (typeof payload !== "object") throw new Error();  // Put in DTO + Zod instead
 ```
 
 ---

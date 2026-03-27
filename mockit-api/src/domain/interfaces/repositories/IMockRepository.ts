@@ -1,14 +1,6 @@
-import type { JsonValue } from "../../entities/Template.js";
-
-export interface MockStateRecord {
-  mockId: string;
-  state: JsonValue;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import type { Mock } from "../../entities/Mock.js";
 
 export interface IMockRepository {
-  getBySimulationId(mockId: string): Promise<MockStateRecord | null>;
-  upsertBySimulationId(mockId: string, state: JsonValue): Promise<MockStateRecord>;
-  deleteBySimulationId(mockId: string): Promise<boolean>;
+  insert(mock: Mock): Promise<Mock>;
+  getAllByTemplateId(templateId: string): Promise<Mock[]>;
 }

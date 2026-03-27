@@ -1,7 +1,7 @@
-import type { JsonValue } from "../../entities/Template.js";
-import type { MockStateRecord } from "../repositories/IMockRepository.js";
+import type { Mock } from "../../entities/Mock.js";
+import type { JsonObject } from "../../entities/Template.js";
 
 export interface IMockUseCase {
-  insert(mockId: string, payload: JsonValue): Promise<MockStateRecord>;
-  getAll(mockId: string): Promise<MockStateRecord>;
+  insert(templateId: string, data: JsonObject): Promise<Mock>;
+  getAll(templateId: string): Promise<Mock[]>;
 }

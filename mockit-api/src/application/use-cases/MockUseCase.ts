@@ -1,6 +1,7 @@
-import type { JsonObject, JsonValue } from "../../domain/entities/Template.js";
+import { Mock } from "../../domain/entities/Mock.js";
+import type { JsonObject } from "../../domain/entities/Template.js";
 import type { ITemplateRepository } from "../../domain/interfaces/repositories/ITemplateRepository.js";
-import type { IMockRepository, MockStateRecord } from "../../domain/interfaces/repositories/IMockRepository.js";
+import type { IMockRepository } from "../../domain/interfaces/repositories/IMockRepository.js";
 import type { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
 
 export class MockUseCase implements IMockUseCase {
@@ -9,34 +10,38 @@ export class MockUseCase implements IMockUseCase {
     private readonly mockRepository: IMockRepository,
   ) {}
 
-  public async insert(mockId: string, payload: JsonValue): Promise<MockStateRecord> {
-    // return this.mockStateRepository.insert(newState);
-    return await this.mockRepository.upsertBySimulationId(mockId, payload);
+  public async insert(templateId: string, data: JsonObject): Promise<Mock> {
+    const template = await this.templateRepository.getById(templateId);
+
+    if (template === null) {
+      throw new Error(`Template with id ${templateId} not found`);
+    }
+
+    return this.mockRepository.insert(new Mock(templateId, this.cloneJsonObject(data)));
   }
 
-  public async getAll(mockId: string): Promise<MockStateRecord> {
-    return await this.mockRepository.getBySimulationId(mockId).then((record) => {
-      if (!record) {
-        throw new Error(`Mock state with id ${mockId} not found`);
-      }
-      return this.toDetachedRecord(record);
-    });
+  public async getAll(templateId: string): Promise<Mock[]> {
+    const template = await this.templateRepository.getById(templateId);
+
+    if (template === null) {
+      throw new Error(`Template with id ${templateId} not found`);
+    }
+
+    const rows = await this.mockRepository.getAllByTemplateId(templateId);
+    return rows.map((row) => this.toDetachedMock(row));
   }
 
-  private isJsonObject(value: JsonValue): value is JsonObject {
-    return typeof value === "object" && value !== null && !Array.isArray(value);
+  private cloneJsonObject(value: JsonObject): JsonObject {
+    return JSON.parse(JSON.stringify(value)) as JsonObject;
   }
 
-  private cloneJson(value: JsonValue): JsonValue {
-    return JSON.parse(JSON.stringify(value)) as JsonValue;
-  }
-
-  private toDetachedRecord(record: MockStateRecord): MockStateRecord {
+  private toDetachedMock(record: Mock): Mock {
     return {
-      mockId: record.mockId,
-      state: this.cloneJson(record.state),
+      id: record.id,
+      templateId: record.templateId,
+      data: this.cloneJsonObject(record.data),
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
-    };
+    } as Mock;
   }
 }

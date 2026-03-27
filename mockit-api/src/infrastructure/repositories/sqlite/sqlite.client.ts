@@ -26,19 +26,11 @@ export class SqliteClient {
 
   private bootstrap() {
     this.sqlite.exec(`
-      CREATE TABLE IF NOT EXISTS template_definitions (
-        id TEXT PRIMARY KEY,
-        created_at INTEGER NOT NULL,
-        updated_at INTEGER NOT NULL
-      );
-
-      CREATE TABLE IF NOT EXISTS mocks (
-        id TEXT PRIMARY KEY,
-        template_id TEXT NOT NULL,
-        data TEXT NOT NULL,
-        created_at INTEGER NOT NULL,
-        updated_at INTEGER NOT NULL,
-        FOREIGN KEY (template_id) REFERENCES template_definitions(id) ON DELETE CASCADE
+      CREATE TABLE IF NOT EXISTS MOCK (
+        ID TEXT PRIMARY KEY,
+        DATA TEXT NOT NULL,
+        CREATED_AT INTEGER NOT NULL,
+        UPDATED_AT INTEGER NOT NULL
       );
     `);
   }

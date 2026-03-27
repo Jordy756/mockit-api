@@ -5,7 +5,8 @@ import type { MockController } from "../controllers/MockController.js";
 export const createMockRoutes = (mockController: MockController) => {
   const router = Router();
 
-  router.route("/:templateId").get(mockController.getAll).post(mockController.insert);
+  router.post("/", mockController.insert);
+  router.get("/", mockController.getAll);
 
   return router;
 };

@@ -1,19 +1,16 @@
-import { eq } from "drizzle-orm";
-
 import { Mock } from "../../domain/entities/Mock.js";
 import type { IMockRepository } from "../../domain/interfaces/repositories/IMockRepository.js";
-import { mocksTable, type MockRow } from "./sqlite/schema/mock.schema.js";
+import { mockTable, type MockRow } from "./sqlite/schema/mock.schema.js";
 import type { SqliteClient } from "./sqlite/sqlite.client.js";
 
 export class MockRepository implements IMockRepository {
   constructor(private readonly sqliteClient: SqliteClient) {}
 
-  public async insert({ id, templateId, data, createdAt, updatedAt }: Mock): Promise<Mock> {
+  public async insert({ id, data, createdAt, updatedAt }: Mock): Promise<Mock> {
     const rows = await this.sqliteClient.db
-      .insert(mocksTable)
+      .insert(mockTable)
       .values({
         id,
-        templateId,
         data,
         createdAt,
         updatedAt,
@@ -29,17 +26,16 @@ export class MockRepository implements IMockRepository {
     return this.toDomain(row);
   }
 
-  public async getAllByTemplateId(templateId: string): Promise<Mock[]> {
-    const rows = await this.sqliteClient.db.select().from(mocksTable).where(eq(mocksTable.templateId, templateId));
+  public async getAll(): Promise<Mock[]> {
+    const rows = await this.sqliteClient.db.select().from(mockTable);
 
     return rows.map((row) => this.toDomain(row));
   }
 
   private toDomain(row: MockRow): Mock {
-    const mock = new Mock(row.templateId, row.data);
+    const mock = new Mock(row.data);
     return Object.assign(mock, {
       id: row.id,
-      templateId: row.templateId,
       data: row.data,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,

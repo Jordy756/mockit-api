@@ -2,11 +2,10 @@ import { Router } from "express";
 
 import type { MockController } from "../controllers/MockController.js";
 
-export const createMockRoutes = (mockController: MockController) => {
+export const createMockRuntimeRoutes = (mockRuntimeController: MockController) => {
   const router = Router();
 
-  router.post("/", mockController.register);
-  router.get("/", mockController.list);
+  router.route("/:mockId").get(mockRuntimeController.getAll).post(mockRuntimeController.insert);
 
   return router;
 };

@@ -14,6 +14,7 @@ export class SqliteClient {
 
     this.sqlite = new Database(filename);
     this.sqlite.pragma("journal_mode = WAL");
+    this.sqlite.pragma("foreign_keys = ON");
     this.connection = drizzle(this.sqlite);
 
     this.bootstrap();
@@ -25,11 +26,19 @@ export class SqliteClient {
 
   private bootstrap() {
     this.sqlite.exec(`
-      CREATE TABLE IF NOT EXISTS mock_definitions (
+      CREATE TABLE IF NOT EXISTS template_definitions (
         id TEXT PRIMARY KEY,
         payload TEXT NOT NULL,
         created_at INTEGER NOT NULL,
         updated_at INTEGER NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS mock_states (
+        mock_id TEXT PRIMARY KEY,
+        state TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL,
+        FOREIGN KEY (mock_id) REFERENCES template_definitions(id) ON DELETE CASCADE
       );
     `);
   }

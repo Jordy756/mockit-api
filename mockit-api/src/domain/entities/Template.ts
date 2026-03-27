@@ -10,7 +10,7 @@ export interface JsonArray extends Array<JsonValue> {}
 
 export type JsonValue = JsonPrimitive | JsonObject | JsonArray;
 
-export class Mock {
+export class Template {
   public readonly id: string;
   public readonly payload: JsonValue;
   public readonly createdAt: Date;

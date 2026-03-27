@@ -1,10 +1,10 @@
-import express, { json } from "express";
 import cors from "cors";
-import { MockUseCase } from "../../application/use-cases/MockUseCase.js";
-import { MockController } from "../controllers/MockController.js";
-import { MockRepository } from "../repositories/MockRepository.js";
+import express, { json } from "express";
+import { TemplateUseCase } from "../../application/use-cases/TemplateUseCase.js";
+import { TemplateController } from "../controllers/TemplateController.js";
 import { SqliteClient } from "../repositories/sqlite/sqlite.client.js";
-import { createMockRoutes } from "../routes/MockRoutes.js";
+import { TemplateRepository } from "../repositories/TemplateRepository.js";
+import { createTemplateRoutes } from "../routes/TemplateRoutes.js";
 
 interface Options {
   port?: number;
@@ -13,7 +13,8 @@ interface Options {
 export class Server {
   private readonly app = express();
   private readonly port: number;
-  private readonly mockController: MockController;
+  private readonly mockController: TemplateController;
+  // private readonly mockRuntimeController: MockController;
 
   constructor(options: Options) {
     const { port = 3000 } = options;
@@ -21,17 +22,22 @@ export class Server {
     this.port = port;
 
     const sqliteClient = new SqliteClient();
-    const mockRepository = new MockRepository(sqliteClient);
-    const mockUseCase = new MockUseCase(mockRepository);
+    const mockRepository = new TemplateRepository(sqliteClient);
+    // const mockStateRepository = new MockStateRepository(sqliteClient);
 
-    this.mockController = new MockController(mockUseCase);
+    const mockUseCase = new TemplateUseCase(mockRepository);
+    // const mockRuntimeUseCase = new MockUseCase(mockRepository, mockStateRepository);
+
+    this.mockController = new TemplateController(mockUseCase);
+    // this.mockRuntimeController = new MockController(mockRuntimeUseCase);
   }
 
   public start() {
     this.app.disable("x-powered-by");
     this.app.use(json());
     this.app.use(cors());
-    this.app.use("/api/mocks", createMockRoutes(this.mockController));
+    this.app.use("/api/templates", createTemplateRoutes(this.mockController));
+    // this.app.use("/api/mocks", createMockRuntimeRoutes(this.mockRuntimeController));
 
     this.app.listen(this.port, () => {
       console.log(`Server is running on http://localhost:${this.port}`);

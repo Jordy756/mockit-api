@@ -7,7 +7,7 @@ export interface MockStateRecord {
   updatedAt: Date;
 }
 
-export interface IMockStateRepository {
+export interface IMockRepository {
   getBySimulationId(mockId: string): Promise<MockStateRecord | null>;
   upsertBySimulationId(mockId: string, state: JsonValue): Promise<MockStateRecord>;
   deleteBySimulationId(mockId: string): Promise<boolean>;

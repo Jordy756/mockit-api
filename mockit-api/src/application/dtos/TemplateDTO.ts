@@ -16,10 +16,10 @@ export const registerTemplateInputSchema = jsonValueSchema;
 
 export const registerTemplateResponseSchema = z.object({
   id: z.uuid(),
+  endpointsUrl: z.string().min(1),
   payload: jsonValueSchema,
   createdAt: z.string(),
   updatedAt: z.string(),
-  runtimeUrl: z.string().min(1),
 });
 
 export type RegisterTemplateInput = z.infer<typeof registerTemplateInputSchema>;

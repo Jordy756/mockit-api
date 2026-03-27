@@ -1,22 +1,15 @@
 import { eq } from "drizzle-orm";
 
 import type { JsonValue } from "../../domain/entities/Template.js";
-import type {
-  IMockStateRepository,
-  MockStateRecord,
-} from "../../domain/interfaces/repositories/IMockStateRepository.js";
-import { mockStatesTable, type MockStateRow } from "./sqlite/schema/mock-state.schema.js";
+import type { IMockRepository, MockStateRecord } from "../../domain/interfaces/repositories/IMockRepository.js";
+import { mockTable, type MockRow } from "./sqlite/schema/mock.schema.js";
 import type { SqliteClient } from "./sqlite/sqlite.client.js";
 
-export class MockStateRepository implements IMockStateRepository {
+export class MockRepository implements IMockRepository {
   constructor(private readonly sqliteClient: SqliteClient) {}
 
   public async getBySimulationId(mockId: string): Promise<MockStateRecord | null> {
-    const rows = await this.sqliteClient.db
-      .select()
-      .from(mockStatesTable)
-      .where(eq(mockStatesTable.mockId, mockId))
-      .limit(1);
+    const rows = await this.sqliteClient.db.select().from(mockTable).where(eq(mockTable.mockId, mockId)).limit(1);
 
     const row = rows[0];
     return row === undefined ? null : this.toRecord(row);
@@ -29,7 +22,7 @@ export class MockStateRepository implements IMockStateRepository {
 
     if (existing === null) {
       const inserted = await this.sqliteClient.db
-        .insert(mockStatesTable)
+        .insert(mockTable)
         .values({
           mockId,
           state,
@@ -48,12 +41,12 @@ export class MockStateRepository implements IMockStateRepository {
     }
 
     const updated = await this.sqliteClient.db
-      .update(mockStatesTable)
+      .update(mockTable)
       .set({
         state,
         updatedAt: now,
       })
-      .where(eq(mockStatesTable.mockId, mockId))
+      .where(eq(mockTable.mockId, mockId))
       .returning();
 
     const row = updated[0];
@@ -67,14 +60,14 @@ export class MockStateRepository implements IMockStateRepository {
 
   public async deleteBySimulationId(mockId: string): Promise<boolean> {
     const rows = await this.sqliteClient.db
-      .delete(mockStatesTable)
-      .where(eq(mockStatesTable.mockId, mockId))
-      .returning({ mockId: mockStatesTable.mockId });
+      .delete(mockTable)
+      .where(eq(mockTable.mockId, mockId))
+      .returning({ mockId: mockTable.mockId });
 
     return rows[0] !== undefined;
   }
 
-  private toRecord(row: MockStateRow): MockStateRecord {
+  private toRecord(row: MockRow): MockStateRecord {
     return {
       mockId: row.mockId,
       state: row.state,

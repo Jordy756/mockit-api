@@ -9,10 +9,10 @@ export class TemplateMapper {
   public static toTemplateDTO({ id, payload, createdAt, updatedAt }: Template): RegisterTemplateResponse {
     return {
       id,
+      endpointsUrl: `/api/mocks/${id}`,
       payload,
       createdAt: createdAt.toISOString(),
       updatedAt: updatedAt.toISOString(),
-      runtimeUrl: `/api/mocks/${id}`,
     };
   }
 }

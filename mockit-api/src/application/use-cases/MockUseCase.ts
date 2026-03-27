@@ -1,15 +1,12 @@
 import type { JsonObject, JsonValue } from "../../domain/entities/Template.js";
 import type { ITemplateRepository } from "../../domain/interfaces/repositories/ITemplateRepository.js";
-import type {
-  IMockStateRepository,
-  MockStateRecord,
-} from "../../domain/interfaces/repositories/IMockStateRepository.js";
+import type { IMockRepository, MockStateRecord } from "../../domain/interfaces/repositories/IMockRepository.js";
 import type { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
 
 export class MockUseCase implements IMockUseCase {
   constructor(
     private readonly mockRepository: ITemplateRepository,
-    private readonly mockStateRepository: IMockStateRepository,
+    private readonly mockStateRepository: IMockRepository,
   ) {}
 
   public async insert(mockId: string, payload: JsonValue): Promise<MockStateRecord> {

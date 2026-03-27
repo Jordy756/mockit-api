@@ -19,26 +19,23 @@ export class MockRepository implements IMockRepository {
 
     const row = rows[0];
 
-    if (row === undefined) {
-      throw new Error("Failed to persist mock row");
-    }
+    if (row === undefined) throw new Error("Failed to persist mock row");
 
     return this.toDomain(row);
   }
 
   public async getAll(): Promise<Mock[]> {
     const rows = await this.sqliteClient.db.select().from(mockTable);
-
     return rows.map((row) => this.toDomain(row));
   }
 
-  private toDomain(row: MockRow): Mock {
-    const mock = new Mock(row.data);
+  private toDomain({ id, data, createdAt, updatedAt }: MockRow): Mock {
+    const mock = new Mock(data);
     return Object.assign(mock, {
-      id: row.id,
-      data: row.data,
-      createdAt: row.createdAt,
-      updatedAt: row.updatedAt,
+      id,
+      data,
+      createdAt,
+      updatedAt,
     });
   }
 }

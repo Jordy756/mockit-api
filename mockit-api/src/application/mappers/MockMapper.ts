@@ -9,8 +9,8 @@ export class MockMapper {
     return {
       id,
       data,
-      createdAt,
-      updatedAt,
+      createdAt: createdAt.toISOString(),
+      updatedAt: updatedAt.toISOString(),
     };
   }
 

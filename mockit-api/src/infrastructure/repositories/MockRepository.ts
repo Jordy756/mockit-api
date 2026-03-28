@@ -20,7 +20,14 @@ export class MockRepository implements IMockRepository {
 
   public async getAll(mockId: string): Promise<Mock> {
     const rows = await this.sqliteClient.db.select().from(mockTable).where(eq(mockTable.id, mockId));
-    const mocks = rows.map((row) => row.data);
-    return new Mock(mocks);
+
+    if (rows.length === 0) {
+      return new Mock([]);
+    }
+
+    const firstRowData = rows[0].data;
+    const mockData = Array.isArray(firstRowData) ? firstRowData : [firstRowData];
+
+    return new Mock(mockData as Record<string, unknown>[]);
   }
 }

@@ -7,23 +7,16 @@ import type { SqliteClient } from "./sqlite/sqlite.client.js";
 export class MockRecordRepository implements IMockRecordRepository {
   constructor(private readonly sqliteClient: SqliteClient) {}
 
-  public async insert({ id, mock, createdAt, updatedAt }: MockRecord): Promise<MockRecord> {
-    throw new Error("Method not implemented.");
-    // const rows = await this.sqliteClient.db
-    //   .insert(mockTable)
-    //   .values({
-    //     id,
-    //     data: mock.data,
-    //     createdAt,
-    //     updatedAt,
-    //   })
-    //   .returning();
+  public async insert(mockRecord: MockRecord): Promise<MockRecord> {
+    const { id, mock, createdAt, updatedAt } = mockRecord;
+    await this.sqliteClient.db.insert(mockTable).values({
+      id,
+      data: mock.data as unknown as Record<string, unknown>,
+      createdAt,
+      updatedAt,
+    });
 
-    // const row = rows[0];
-
-    // if (row === undefined) throw new Error("Failed to persist mock record row");
-
-    // return this.toDomain(row);
+    return mockRecord;
   }
 
   public async getAll(): Promise<MockRecord[]> {

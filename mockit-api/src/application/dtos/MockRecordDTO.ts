@@ -4,7 +4,7 @@ import { MockDTO } from "./MockDTO.js";
 
 const schema = z.object({
   id: z.uuid(),
-  data: z.array(z.record(z.string(), z.unknown())),
+  mockDTO: z.instanceof(MockDTO),
   createdAt: z.date(),
   updatedAt: z.date(),
 });

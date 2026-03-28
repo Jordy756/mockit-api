@@ -6,6 +6,9 @@ export class MockRecordUseCase implements IMockRecordUseCase {
   constructor(private readonly mockRecordRepository: IMockRecordRepository) {}
 
   public async insert(mockRecord: MockRecord): Promise<MockRecord> {
+    mockRecord.mock.data.push(mockRecord.mock.data[0]);
+
+    console.log(mockRecord.mock.data);
     return this.mockRecordRepository.insert(mockRecord);
   }
 

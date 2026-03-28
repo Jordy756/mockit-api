@@ -9,8 +9,14 @@ export class MockController {
 
   public insert = async (req: Request, res: Response): Promise<void> => {
     try {
-      const mockDTO = new MockDTO({ data: req.body });
-      const template = await this.mockUseCase.insert(MockMapper.toMock(mockDTO));
+      // const { id } = req.params;
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id || "";
+      const mockDTO = new MockDTO({
+        data: req.body,
+        updatedAt: new Date(),
+      });
+
+      const template = await this.mockUseCase.insert(id, MockMapper.toMock(mockDTO));
       const response = MockMapper.toMockDTO(template);
 
       res.status(201).json(response);

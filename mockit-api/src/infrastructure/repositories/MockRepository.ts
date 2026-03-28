@@ -1,4 +1,5 @@
 import { Mock } from "../../domain/entities/Mock.js";
+import { eq } from "drizzle-orm";
 import { IMockRepository } from "../../domain/interfaces/repositories/IMockRepository.js";
 import { mockTable, type MockRow } from "./sqlite/schema/mock.schema.js";
 import type { SqliteClient } from "./sqlite/sqlite.client.js";
@@ -6,14 +7,29 @@ import type { SqliteClient } from "./sqlite/sqlite.client.js";
 export class MockRepository implements IMockRepository {
   constructor(private readonly sqliteClient: SqliteClient) {}
 
-  public async insert({ id, data, createdAt, updatedAt }: Mock): Promise<Mock> {
+  public async insert(mockId: string, { data, createdAt, updatedAt }: Mock): Promise<Mock> {
+    // 1. Primero buscar el mock con el id
+    const existingRows = await this.sqliteClient.db
+      .select({ id: mockTable.id })
+      .from(mockTable)
+      .where(eq(mockTable.id, mockId))
+      .limit(1);
+
+    // 2. Insertar el mock dentro del mockTable.data
     const rows = await this.sqliteClient.db
       .insert(mockTable)
       .values({
-        id,
+        id: mockId,
         data,
         createdAt,
         updatedAt,
+      })
+      .onConflictDoUpdate({
+        target: mockTable.id,
+        set: {
+          data,
+          updatedAt,
+        },
       })
       .returning();
 

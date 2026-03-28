@@ -5,8 +5,8 @@ import { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js"
 export class MockUseCase implements IMockUseCase {
   constructor(private readonly mockRepository: IMockRepository) {}
 
-  public async insert(mock: Mock): Promise<Mock> {
-    return this.mockRepository.insert(mock);
+  public async insert(mockId: string, mock: Mock): Promise<Mock> {
+    return this.mockRepository.insert(mockId, mock);
   }
 
   public async getAll(): Promise<Mock[]> {

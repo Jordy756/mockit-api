@@ -11,10 +11,7 @@ export class MockController {
     try {
       // const { id } = req.params;
       const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id || "";
-      const mockDTO = new MockDTO({
-        data: req.body,
-        updatedAt: new Date(),
-      });
+      const mockDTO = new MockDTO(req.body);
 
       const template = await this.mockUseCase.insert(id, MockMapper.toMock(mockDTO));
       const response = MockMapper.toMockDTO(template);

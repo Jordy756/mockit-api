@@ -1,18 +1,18 @@
 import type { Request, Response } from "express";
 import { ZodError } from "zod";
 
-import type { ITemplateUseCase } from "../../domain/interfaces/use-cases/ITemplateUseCase.js";
-import { MockMapper } from "../../application/mappers/MockMapper.js";
-import { MockDTO } from "../../application/dtos/MockDTO.js";
+import { MockRecordDTO } from "../../application/dtos/MockRecordDTO.js";
+import { MockRecordMapper } from "../../application/mappers/MockRecordMapper.js";
+import type { IMockRecordUseCase } from "../../domain/interfaces/use-cases/IMockRecordUseCase.js";
 
-export class TemplateController {
-  constructor(private readonly templateUseCase: ITemplateUseCase) {}
+export class MockRecordController {
+  constructor(private readonly mockRecordUseCase: IMockRecordUseCase) {}
 
   public insert = async (req: Request, res: Response): Promise<void> => {
     try {
-      const mockDTO = new MockDTO({ data: req.body });
-      const template = await this.templateUseCase.insert(MockMapper.toMock(mockDTO));
-      const response = MockMapper.toMockDTO(template);
+      const mockDTO = new MockRecordDTO({ data: req.body });
+      const template = await this.mockRecordUseCase.insert(MockRecordMapper.toMockRecord(mockDTO));
+      const response = MockRecordMapper.toMockRecordDTO(template);
 
       res.status(201).json(response);
     } catch (error) {
@@ -33,8 +33,8 @@ export class TemplateController {
 
   public getAll = async (req: Request, res: Response): Promise<void> => {
     try {
-      const templates = await this.templateUseCase.getAll();
-      const response = MockMapper.toMockDTOs(templates);
+      const templates = await this.mockRecordUseCase.getAll();
+      const response = MockRecordMapper.toMockRecordDTOs(templates);
 
       res.status(200).json(response);
     } catch (error) {

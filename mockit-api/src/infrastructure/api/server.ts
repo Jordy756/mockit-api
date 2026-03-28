@@ -1,7 +1,7 @@
 import cors from "cors";
 import express, { json } from "express";
-import { TemplateUseCase } from "../../application/use-cases/TemplateUseCase.js";
-import { TemplateController } from "../controllers/TemplateController.js";
+import { MockRecordUseCase } from "../../application/use-cases/MockRecordUseCase.js";
+import { MockRecordController } from "../controllers/MockRecordController.js";
 import { TemplateRepository } from "../repositories/TemplateRepository.js";
 import { SqliteClient } from "../repositories/sqlite/sqlite.client.js";
 import { createTemplateRoutes } from "../routes/TemplateRoutes.js";
@@ -17,7 +17,7 @@ interface Options {
 export class Server {
   private readonly app = express();
   private readonly port: number;
-  private readonly templateController: TemplateController;
+  private readonly templateController: MockRecordController;
   private readonly mockController: MockController;
 
   constructor(options: Options) {
@@ -29,10 +29,10 @@ export class Server {
     const templateRepository = new TemplateRepository(sqliteClient);
     const mockRepository = new MockRepository(sqliteClient);
 
-    const templateUseCase = new TemplateUseCase(templateRepository);
+    const templateUseCase = new MockRecordUseCase(templateRepository);
     const mockUseCase = new MockUseCase(mockRepository);
 
-    this.templateController = new TemplateController(templateUseCase);
+    this.templateController = new MockRecordController(templateUseCase);
     this.mockController = new MockController(mockUseCase);
   }
 

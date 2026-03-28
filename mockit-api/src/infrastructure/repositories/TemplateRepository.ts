@@ -1,9 +1,9 @@
 import { Mock } from "../../domain/entities/Mock.js";
-import type { ITemplateRepository } from "../../domain/interfaces/repositories/ITemplateRepository.js";
+import type { IMockRecordRepository } from "../../domain/interfaces/repositories/IMockRecordRepository.js";
 import { mockTable, type MockRow } from "./sqlite/schema/mock.schema.js";
 import type { SqliteClient } from "./sqlite/sqlite.client.js";
 
-export class TemplateRepository implements ITemplateRepository {
+export class TemplateRepository implements IMockRecordRepository {
   constructor(private readonly sqliteClient: SqliteClient) {}
 
   public async insert({ id, data, createdAt, updatedAt }: Mock): Promise<Mock> {

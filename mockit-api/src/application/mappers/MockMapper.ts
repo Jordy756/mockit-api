@@ -1,20 +1,16 @@
 import { Mock } from "../../domain/entities/Mock.js";
+import { MockDTO } from "../dtos/MockDTO.js";
 
 export class MockMapper {
-  public static toEntity(data: any): Mock {
-    return new Mock(data);
+  public static toMock({ id, data, createdAt, updatedAt }: MockDTO): Mock {
+    return new Mock({ id, data, createdAt, updatedAt });
   }
 
-  public static toDTO({ id, data, createdAt, updatedAt }: Mock): any {
-    return {
-      id,
-      data,
-      createdAt: createdAt.toISOString(),
-      updatedAt: updatedAt.toISOString(),
-    };
+  public static toMockDTO({ id, data, createdAt, updatedAt }: Mock): MockDTO {
+    return new MockDTO({ id, data, createdAt, updatedAt });
   }
 
-  public static toDTOs(mocks: Mock[]): any[] {
-    return mocks.map((mock) => this.toDTO(mock));
+  public static toMockDTOs(mocks: Mock[]): MockDTO[] {
+    return mocks.map((mock) => this.toMockDTO(mock));
   }
 }

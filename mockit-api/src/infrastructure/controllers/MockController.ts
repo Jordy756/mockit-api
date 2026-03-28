@@ -1,18 +1,18 @@
 import type { Request, Response } from "express";
 import { ZodError } from "zod";
 
-import { insertMockInputSchema, mockResponseSchema } from "../../application/dtos/MockDTO.js";
 import type { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
 import { MockMapper } from "../../application/mappers/MockMapper.js";
+import { MockDTO } from "../../application/dtos/MockDTO.js";
 
 export class MockController {
   constructor(private readonly mockUseCase: IMockUseCase) {}
 
   public insert = async (req: Request, res: Response): Promise<void> => {
     try {
-      const input = insertMockInputSchema.parse(req.body);
-      const mock = await this.mockUseCase.insert(MockMapper.toEntity(input));
-      const response = mockResponseSchema.parse(MockMapper.toDTO(mock));
+      const mockDTO = new MockDTO({ data: req.body });
+      const mock = await this.mockUseCase.insert(MockMapper.toMock(mockDTO));
+      const response = MockMapper.toMockDTO(mock);
 
       res.status(201).json(response);
     } catch (error) {
@@ -34,7 +34,7 @@ export class MockController {
   public getAll = async (req: Request, res: Response): Promise<void> => {
     try {
       const mocks = await this.mockUseCase.getAll();
-      const response = MockMapper.toDTOs(mocks);
+      const response = MockMapper.toMockDTOs(mocks);
 
       res.status(200).json(response);
     } catch (error) {

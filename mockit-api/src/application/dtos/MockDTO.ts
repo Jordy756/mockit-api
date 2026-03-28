@@ -1,28 +1,38 @@
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
 
-import type { JsonValue } from "../../domain/entities/Mock.js";
-
-export const jsonValueSchema: z.ZodType<JsonValue> = z.lazy(() =>
-  z.union([
-    z.string(),
-    z.number(),
-    z.boolean(),
-    z.null(),
-    z.array(jsonValueSchema),
-    z.record(z.string(), jsonValueSchema),
-  ]),
-);
-
-export const jsonObjectSchema = z.record(z.string(), jsonValueSchema);
-
-export const insertMockInputSchema = jsonObjectSchema;
-
-export const mockResponseSchema = z.object({
+const schema = z.object({
   id: z.uuid(),
-  data: jsonObjectSchema,
-  createdAt: z.string(),
-  updatedAt: z.string(),
+  data: z.record(z.string(), z.unknown()),
+  createdAt: z.date(),
+  updatedAt: z.date(),
 });
 
-export type InsertMockInput = z.infer<typeof insertMockInputSchema>;
-export type MockResponse = z.infer<typeof mockResponseSchema>;
+interface MockDTOData {
+  id?: string;
+  data: Record<string, unknown>;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export class MockDTO {
+  public readonly id: string;
+  public readonly data: Record<string, unknown>;
+  public readonly createdAt: Date;
+  public readonly updatedAt: Date;
+
+  constructor({ id, data, createdAt, updatedAt }: MockDTOData) {
+    const now = new Date();
+
+    this.id = id ?? randomUUID();
+    this.data = data;
+    this.createdAt = createdAt ?? now;
+    this.updatedAt = updatedAt ?? now;
+
+    this.validateForResponse();
+  }
+
+  private validateForResponse() {
+    return schema.parse(this);
+  }
+}

@@ -1,25 +1,20 @@
-import { randomUUID } from "node:crypto";
-
-export type JsonPrimitive = string | number | boolean | null;
-
-export interface JsonObject {
-  [key: string]: JsonValue;
+interface MockData {
+  id: string;
+  data: Record<string, unknown>;
+  createdAt: Date;
+  updatedAt: Date;
 }
-
-export interface JsonArray extends Array<JsonValue> {}
-
-export type JsonValue = JsonPrimitive | JsonObject | JsonArray;
 
 export class Mock {
   public readonly id: string;
-  public readonly data: JsonObject;
+  public readonly data: Record<string, unknown>;
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 
-  constructor(data: JsonObject) {
-    this.id = randomUUID();
+  constructor({ id, data, createdAt, updatedAt }: MockData) {
+    this.id = id;
     this.data = data;
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
+    this.createdAt = new Date(createdAt);
+    this.updatedAt = new Date(updatedAt);
   }
 }

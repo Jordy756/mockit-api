@@ -11,8 +11,8 @@ export class MockRecordController {
   public insert = async (req: Request, res: Response): Promise<void> => {
     try {
       const mockDTO = new MockRecordDTO({ data: req.body });
-      const template = await this.mockRecordUseCase.insert(MockRecordMapper.toMockRecord(mockDTO));
-      const response = MockRecordMapper.toMockRecordDTO(template);
+      const mockRecord = await this.mockRecordUseCase.insert(MockRecordMapper.toMockRecord(mockDTO));
+      const response = MockRecordMapper.toMockRecordDTO(mockRecord);
 
       res.status(201).json(response);
     } catch (error) {
@@ -25,7 +25,7 @@ export class MockRecordController {
       }
 
       res.status(500).json({
-        message: "Unexpected error while inserting template row",
+        message: "Unexpected error while inserting mock record row",
         error: error instanceof Error ? error.message : String(error),
       });
     }
@@ -33,8 +33,8 @@ export class MockRecordController {
 
   public getAll = async (req: Request, res: Response): Promise<void> => {
     try {
-      const templates = await this.mockRecordUseCase.getAll();
-      const response = MockRecordMapper.toMockRecordDTOs(templates);
+      const mockRecords = await this.mockRecordUseCase.getAll();
+      const response = MockRecordMapper.toMockRecordDTOs(mockRecords);
 
       res.status(200).json(response);
     } catch (error) {
@@ -47,7 +47,7 @@ export class MockRecordController {
       }
 
       res.status(500).json({
-        message: "Unexpected error while listing template rows",
+        message: "Unexpected error while listing mock record rows",
         error: error instanceof Error ? error.message : String(error),
       });
     }

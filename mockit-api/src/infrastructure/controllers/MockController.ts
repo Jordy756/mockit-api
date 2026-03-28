@@ -13,8 +13,8 @@ export class MockController {
       const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id || "";
       const mockDTO = new MockDTO(req.body);
 
-      const template = await this.mockUseCase.insert(id, MockMapper.toMock(mockDTO));
-      const response = MockMapper.toMockDTO(template);
+      const mock = await this.mockUseCase.insert(id, MockMapper.toMock(mockDTO));
+      const response = MockMapper.toMockDTO(mock);
 
       res.status(201).json(response);
     } catch (error) {
@@ -27,7 +27,7 @@ export class MockController {
       }
 
       res.status(500).json({
-        message: "Unexpected error while inserting template row",
+        message: "Unexpected error while inserting mock row",
         error: error instanceof Error ? error.message : String(error),
       });
     }
@@ -35,8 +35,8 @@ export class MockController {
 
   public getAll = async (req: Request, res: Response): Promise<void> => {
     try {
-      const templates = await this.mockUseCase.getAll();
-      const response = MockMapper.toMockDTOs(templates);
+      const mocks = await this.mockUseCase.getAll();
+      const response = MockMapper.toMockDTOs(mocks);
 
       res.status(200).json(response);
     } catch (error) {
@@ -49,7 +49,7 @@ export class MockController {
       }
 
       res.status(500).json({
-        message: "Unexpected error while listing template rows",
+        message: "Unexpected error while listing mock rows",
         error: error instanceof Error ? error.message : String(error),
       });
     }

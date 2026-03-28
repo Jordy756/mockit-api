@@ -1,16 +1,17 @@
 import type { Request, Response } from "express";
 import { ZodError } from "zod";
-import { MockDTO } from "../../application/dtos/MockDTO.js";
-import { MockMapper } from "../../application/mappers/MockMapper.js";
-import { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
 
-export class MockController {
-  constructor(private readonly mockUseCase: IMockUseCase) {}
+import type { ITemplateUseCase } from "../../domain/interfaces/use-cases/ITemplateUseCase.js";
+import { MockMapper } from "../../application/mappers/MockMapper.js";
+import { MockDTO } from "../../application/dtos/MockDTO.js";
+
+export class TemplateController {
+  constructor(private readonly templateUseCase: ITemplateUseCase) {}
 
   public insert = async (req: Request, res: Response): Promise<void> => {
     try {
       const mockDTO = new MockDTO({ data: req.body });
-      const template = await this.mockUseCase.insert(MockMapper.toMock(mockDTO));
+      const template = await this.templateUseCase.insert(MockMapper.toMock(mockDTO));
       const response = MockMapper.toMockDTO(template);
 
       res.status(201).json(response);
@@ -32,7 +33,7 @@ export class MockController {
 
   public getAll = async (req: Request, res: Response): Promise<void> => {
     try {
-      const templates = await this.mockUseCase.getAll();
+      const templates = await this.templateUseCase.getAll();
       const response = MockMapper.toMockDTOs(templates);
 
       res.status(200).json(response);

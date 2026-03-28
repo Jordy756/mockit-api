@@ -1,9 +1,9 @@
 import { Mock } from "../../domain/entities/Mock.js";
-import { IMockRepository } from "../../domain/interfaces/repositories/IMockRepository.js";
+import type { ITemplateRepository } from "../../domain/interfaces/repositories/ITemplateRepository.js";
 import { mockTable, type MockRow } from "./sqlite/schema/mock.schema.js";
 import type { SqliteClient } from "./sqlite/sqlite.client.js";
 
-export class MockRepository implements IMockRepository {
+export class TemplateRepository implements ITemplateRepository {
   constructor(private readonly sqliteClient: SqliteClient) {}
 
   public async insert({ id, data, createdAt, updatedAt }: Mock): Promise<Mock> {
@@ -19,7 +19,7 @@ export class MockRepository implements IMockRepository {
 
     const row = rows[0];
 
-    if (row === undefined) throw new Error("Failed to persist mock row");
+    if (row === undefined) throw new Error("Failed to persist template row");
 
     return this.toDomain(row);
   }

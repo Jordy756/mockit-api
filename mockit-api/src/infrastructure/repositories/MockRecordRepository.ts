@@ -27,7 +27,7 @@ export class MockRecordRepository implements IMockRecordRepository {
   private toDomain({ id, data, createdAt, updatedAt }: MockRow): MockRecord {
     return new MockRecord({
       id,
-      mock: new Mock([data]),
+      mock: new Mock(Array.isArray(data) ? data : [data]),
       createdAt: new Date(createdAt),
       updatedAt: new Date(updatedAt),
     });

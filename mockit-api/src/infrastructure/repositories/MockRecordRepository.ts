@@ -8,21 +8,22 @@ export class MockRecordRepository implements IMockRecordRepository {
   constructor(private readonly sqliteClient: SqliteClient) {}
 
   public async insert({ id, mock, createdAt, updatedAt }: MockRecord): Promise<MockRecord> {
-    const rows = await this.sqliteClient.db
-      .insert(mockTable)
-      .values({
-        id,
-        data: mock.data,
-        createdAt,
-        updatedAt,
-      })
-      .returning();
+    throw new Error("Method not implemented.");
+    // const rows = await this.sqliteClient.db
+    //   .insert(mockTable)
+    //   .values({
+    //     id,
+    //     data: mock.data,
+    //     createdAt,
+    //     updatedAt,
+    //   })
+    //   .returning();
 
-    const row = rows[0];
+    // const row = rows[0];
 
-    if (row === undefined) throw new Error("Failed to persist mock record row");
+    // if (row === undefined) throw new Error("Failed to persist mock record row");
 
-    return this.toDomain(row);
+    // return this.toDomain(row);
   }
 
   public async getAll(): Promise<MockRecord[]> {
@@ -33,7 +34,7 @@ export class MockRecordRepository implements IMockRecordRepository {
   private toDomain({ id, data, createdAt, updatedAt }: MockRow): MockRecord {
     return new MockRecord({
       id,
-      mock: new Mock(data),
+      mock: new Mock([data]),
       createdAt: new Date(createdAt),
       updatedAt: new Date(updatedAt),
     });

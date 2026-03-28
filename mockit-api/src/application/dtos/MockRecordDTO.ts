@@ -4,10 +4,17 @@ import { MockDTO } from "./MockDTO.js";
 
 const schema = z.object({
   id: z.uuid(),
-  data: z.record(z.string(), z.unknown()),
+  data: z.array(z.record(z.string(), z.unknown())),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
+
+interface MockRecordDTOProps {
+  id: string;
+  mockDTO: MockDTO;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export class MockRecordDTO {
   public readonly id: string;
@@ -15,15 +22,24 @@ export class MockRecordDTO {
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 
-  constructor(data: Record<string, unknown>) {
-    const now = new Date();
-
-    this.id = randomUUID();
-    this.mockDTO = new MockDTO(data);
-    this.createdAt = now;
-    this.updatedAt = now;
+  constructor({ id, mockDTO, createdAt, updatedAt }: MockRecordDTOProps) {
+    this.id = id;
+    this.mockDTO = mockDTO;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
 
     this.validateForResponse();
+  }
+
+  public static createNew(mockDTO: MockDTO): MockRecordDTO {
+    const now = new Date();
+
+    return new MockRecordDTO({
+      id: randomUUID(),
+      mockDTO: mockDTO,
+      createdAt: now,
+      updatedAt: now,
+    });
   }
 
   private validateForResponse() {

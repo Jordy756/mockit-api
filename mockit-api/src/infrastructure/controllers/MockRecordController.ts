@@ -10,7 +10,7 @@ export class MockRecordController {
 
   public insert = async (req: Request, res: Response): Promise<void> => {
     try {
-      const mockDTO = new MockRecordDTO({ data: req.body });
+      const mockDTO = MockRecordDTO.createNew(req.body);
       const mockRecord = await this.mockRecordUseCase.insert(MockRecordMapper.toMockRecord(mockDTO));
       const response = MockRecordMapper.toMockRecordDTO(mockRecord);
 

@@ -10,10 +10,10 @@ export class MockController {
   public insert = async (req: Request, res: Response): Promise<void> => {
     try {
       // const { id } = req.params;
-      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id || "";
+      const mockId = Array.isArray(req.params.mockId) ? req.params.mockId[0] : req.params.mockId || "";
       const mockDTO = new MockDTO(req.body);
 
-      const mock = await this.mockUseCase.insert(id, MockMapper.toMock(mockDTO));
+      const mock = await this.mockUseCase.insert(mockId, MockMapper.toMock(mockDTO));
       const response = MockMapper.toMockDTO(mock);
 
       res.status(201).json(response);
@@ -35,10 +35,11 @@ export class MockController {
 
   public getAll = async (req: Request, res: Response): Promise<void> => {
     try {
-      const mocks = await this.mockUseCase.getAll();
-      const response = MockMapper.toMockDTOs(mocks);
+      const mockId = Array.isArray(req.params.mockId) ? req.params.mockId[0] : req.params.mockId || "";
+      const mocks = await this.mockUseCase.getAll(mockId);
+      const response = MockMapper.toMockDTO(mocks);
 
-      res.status(200).json(response);
+      res.status(200).json(response.data);
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({

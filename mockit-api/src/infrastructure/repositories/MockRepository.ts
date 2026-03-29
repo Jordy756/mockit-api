@@ -1,9 +1,8 @@
-import { Mock } from "../../domain/entities/Mock.js";
 import { eq } from "drizzle-orm";
+import { Mock } from "../../domain/entities/Mock.js";
 import { IMockRepository } from "../../domain/interfaces/repositories/IMockRepository.js";
 import { mockTable } from "./sqlite/schema/mockSchema.js";
 import type { SqliteClient } from "./sqlite/sqlite.client.js";
-import { randomUUID } from "node:crypto";
 
 export class MockRepository implements IMockRepository {
   constructor(private readonly sqliteClient: SqliteClient) {}
@@ -33,7 +32,7 @@ export class MockRepository implements IMockRepository {
 
     await this.sqliteClient.db.insert(mockTable).values({
       id: mockId,
-      recordId: mockId, // Temporarily map to mockId to fulfill types if missing
+      recordId: mockId,
       data: [data],
     });
 
@@ -41,15 +40,8 @@ export class MockRepository implements IMockRepository {
   }
 
   public async getAll(mockId: string): Promise<Mock[]> {
-    const rows = await this.sqliteClient.db.select().from(mockTable).where(eq(mockTable.id, mockId));
+    const rows = await this.sqliteClient.db.select().from(mockTable).where(eq(mockTable.recordId, mockId));
 
-    if (rows.length === 0) {
-      return [];
-    }
-
-    const firstRowData = rows[0].data;
-    const mockData = Array.isArray(firstRowData) ? firstRowData : [firstRowData];
-
-    return mockData.map((d) => new Mock({ id: randomUUID(), data: d as Record<string, unknown> }));
+    return rows.length === 0 ? [] : rows.map(({ id, data }) => new Mock({ id, data }));
   }
 }

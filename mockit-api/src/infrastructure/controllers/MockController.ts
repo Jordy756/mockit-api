@@ -38,8 +38,7 @@ export class MockController {
       const mocks = await this.mockUseCase.getAll(mockId);
       const mockDTOs = MockMapper.toMockDTOs(mocks);
 
-      // Return the array of data directly to match old behavior, or the list of DTOs
-      res.status(200).json(mockDTOs.map((dto) => dto.data));
+      res.status(200).json(mockDTOs);
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({

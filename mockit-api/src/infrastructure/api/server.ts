@@ -9,6 +9,9 @@ import { MockRepository } from "../repositories/MockRepository.js";
 import { SqliteClient } from "../repositories/sqlite/sqlite.client.js";
 import { createMockRecordRoutes } from "../routes/MockRecordRoutes.js";
 import { createMockRoutes } from "../routes/MockRoutes.js";
+import { GeminiDataGeneratorHelper } from "../helpers/GeminiDataGeneratorHelper.js";
+import { GoogleGenAI } from "@google/genai";
+import { GOOGLE_GEMINI_API_KEY, GOOGLE_GEMINI_API_MODEL, LLM_RESPONSE_MINE_TYPE } from "../../domain/config/Environment.js";
 
 interface Options {
   port?: number;
@@ -25,11 +28,21 @@ export class Server {
 
     this.port = port;
 
+    const aiDataGeneratorHelper = new GeminiDataGeneratorHelper(
+      new GoogleGenAI(
+        {
+          apiKey: GOOGLE_GEMINI_API_KEY
+        }
+      ), 
+      GOOGLE_GEMINI_API_MODEL!, 
+      LLM_RESPONSE_MINE_TYPE!
+    );
+  
     const sqliteClient = new SqliteClient();
     const mockRecordRepository = new MockRecordRepository(sqliteClient);
     const mockRepository = new MockRepository(sqliteClient);
 
-    const mockRecordUseCase = new MockRecordUseCase(mockRecordRepository);
+    const mockRecordUseCase = new MockRecordUseCase(mockRecordRepository, aiDataGeneratorHelper);
     const mockUseCase = new MockUseCase(mockRepository);
 
     this.mockRecordController = new MockRecordController(mockRecordUseCase);

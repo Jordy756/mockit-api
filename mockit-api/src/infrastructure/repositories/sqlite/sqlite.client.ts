@@ -26,11 +26,16 @@ export class SqliteClient {
 
   private bootstrap() {
     this.sqlite.exec(`
-      CREATE TABLE IF NOT EXISTS MOCK (
+      CREATE TABLE IF NOT EXISTS MOCK_RECORDS (
         ID TEXT PRIMARY KEY,
-        DATA TEXT NOT NULL,
         CREATED_AT INTEGER NOT NULL,
         UPDATED_AT INTEGER NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS MOCKS (
+        ID TEXT PRIMARY KEY,
+        DATA TEXT NOT NULL,
+        RECORD_ID TEXT REFERENCES MOCK_RECORDS(ID) ON DELETE CASCADE
       );
     `);
   }

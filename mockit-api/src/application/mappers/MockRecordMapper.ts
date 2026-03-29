@@ -1,14 +1,15 @@
+import { Mock } from "../../domain/entities/Mock.js";
 import { MockRecord } from "../../domain/entities/MockRecord.js";
-import { GetMockRecordDTO } from "../dtos/MockRecordDTO.js";
+import { CreateMockRecordDTO, GetMockRecordDTO } from "../dtos/MockRecordDTO.js";
 import { MockMapper } from "./MockMapper.js";
 
 export class MockRecordMapper {
-  public static toMockRecord({ id, mocks, createdAt, updatedAt }: MockRecord): MockRecord {
+  public static toMockRecord({ mockDTO }: CreateMockRecordDTO): MockRecord {
     return new MockRecord({
-      id,
-      mocks: mocks.map((m) => MockMapper.toMockDTO(m)),
-      createdAt,
-      updatedAt,
+      id: "",
+      mocks: [new Mock({ id: "", data: mockDTO })],
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
   }
 

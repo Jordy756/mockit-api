@@ -11,20 +11,26 @@ export class MockRecordRepository implements IMockRecordRepository {
   public async insert(mockRecord: MockRecord): Promise<MockRecord> {
     const { id, mocks, createdAt, updatedAt } = mockRecord;
 
-    await this.sqliteClient.db.transaction(async (tx) => {
-      await tx.insert(mockRecordTable).values({
-        id,
-        createdAt,
-        updatedAt,
-      });
+    this.sqliteClient.db.transaction((tx) => {
+      tx.insert(mockRecordTable)
+        .values({
+          id,
+          createdAt,
+          updatedAt,
+        })
+        .run();
 
-      await tx.insert(mockTable).values(
-        mocks.map((m) => ({
-          id: m.id,
-          data: m.data,
-          recordId: id,
-        })),
-      );
+      if (mocks.length === 0) return;
+
+      tx.insert(mockTable)
+        .values(
+          mocks.map((mock) => ({
+            id: mock.id,
+            data: mock.data,
+            recordId: id,
+          })),
+        )
+        .run();
     });
 
     return mockRecord;
@@ -39,7 +45,7 @@ export class MockRecordRepository implements IMockRecordRepository {
     return records.map((record) => {
       const recordMocks = mocks
         .filter((mock) => mock.recordId === record.id)
-        .map((m) => new Mock({ id: m.id, data: m.data }));
+        .map((mock) => new Mock({ id: mock.id, data: mock.data }));
 
       return new MockRecord({
         id: record.id,

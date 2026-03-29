@@ -1,21 +1,44 @@
 import { Mock } from "../../domain/entities/Mock.js";
 import { eq } from "drizzle-orm";
 import { IMockRepository } from "../../domain/interfaces/repositories/IMockRepository.js";
-import { mockTable, type MockRow } from "./sqlite/schema/mock.schema.js";
+import { mockTable } from "./sqlite/schema/mock.schema.js";
 import type { SqliteClient } from "./sqlite/sqlite.client.js";
 
 export class MockRepository implements IMockRepository {
   constructor(private readonly sqliteClient: SqliteClient) {}
 
   public async insert(mockId: string, { data }: Mock): Promise<Mock> {
-    // 1. Primero buscar el mock con el id
     const existingRows = await this.sqliteClient.db
-      .select({ id: mockTable.id })
+      .select({ id: mockTable.id, data: mockTable.data })
       .from(mockTable)
       .where(eq(mockTable.id, mockId))
       .limit(1);
 
-    throw new Error("Mock with the same id already exists");
+    if (existingRows.length > 0) {
+      const existingData = existingRows[0].data;
+      const currentData = Array.isArray(existingData) ? existingData : [existingData];
+      const mergedData = [...currentData, ...data];
+
+      await this.sqliteClient.db
+        .update(mockTable)
+        .set({
+          data: mergedData as unknown as Record<string, unknown>,
+          updatedAt: new Date(),
+        })
+        .where(eq(mockTable.id, mockId));
+
+      return new Mock(mergedData as Record<string, unknown>[]);
+    }
+
+    const now = new Date();
+    await this.sqliteClient.db.insert(mockTable).values({
+      id: mockId,
+      data: data as unknown as Record<string, unknown>,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    return new Mock(data);
   }
 
   public async getAll(mockId: string): Promise<Mock> {

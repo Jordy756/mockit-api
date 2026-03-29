@@ -1,20 +1,28 @@
 import { z } from "zod";
 
 const schema = z.object({
-  data: z
-    .union([z.record(z.string(), z.unknown()), z.array(z.record(z.string(), z.unknown()))])
-    .transform((val) => (Array.isArray(val) ? val : [val])),
+  id: z.uuid().optional(),
+  data: z.record(z.string(), z.unknown()),
 });
 
 export class MockDTO {
-  public readonly data: Record<string, unknown>[];
+  public readonly id?: string;
+  public readonly data: Record<string, unknown>;
 
-  constructor(data: Record<string, unknown>[] | Record<string, unknown>) {
-    this.data = Array.isArray(data) ? data : [data];
+  constructor({ id, data }: { id?: string; data: Record<string, unknown> }) {
+    this.id = id;
+    this.data = data;
     this.validateForResponse();
   }
 
   private validateForResponse() {
     return schema.parse(this);
+  }
+
+  public toJSON() {
+    return {
+      ...(this.id ? { id: this.id } : {}),
+      ...this.data,
+    };
   }
 }

@@ -9,7 +9,7 @@ export class MockUseCase implements IMockUseCase {
     return this.mockRepository.insert(mockId, mock);
   }
 
-  public async getAll(mockId: string): Promise<Mock> {
+  public async getAll(mockId: string): Promise<Mock[]> {
     return await this.mockRepository.getAll(mockId);
   }
 }

@@ -1,8 +1,10 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { mockRecordTable } from "./mockRecordSchema.js";
 
-export const mockTable = sqliteTable("MOCK", {
+export const mockTable = sqliteTable("MOCKS", {
   id: text("ID").primaryKey(),
-  data: text("DATA", { mode: "json" }).$type<Record<string, unknown>>().notNull(),
+  recordId: text("RECORD_ID").references(() => mockRecordTable.id, { onDelete: "cascade" }),
+  data: text("DATA", { mode: "json" }).$type<any>().notNull(),
   createdAt: integer("CREATED_AT", { mode: "timestamp_ms" }).notNull(),
   updatedAt: integer("UPDATED_AT", { mode: "timestamp_ms" }).notNull(),
 });

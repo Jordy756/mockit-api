@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import { ZodError } from "zod";
 
-import { MockDTO } from "../../application/dtos/MockDTO.js";
 import { MockRecordDTO } from "../../application/dtos/MockRecordDTO.js";
 import { MockRecordMapper } from "../../application/mappers/MockRecordMapper.js";
 import type { IMockRecordUseCase } from "../../domain/interfaces/use-cases/IMockRecordUseCase.js";
@@ -11,7 +10,7 @@ export class MockRecordController {
 
   public insert = async (req: Request, res: Response): Promise<void> => {
     try {
-      const mockRecordDTO = MockRecordDTO.createNew(new MockDTO(req.body));
+      const mockRecordDTO = MockRecordDTO.createNew(req.body);
       const mockRecord = await this.mockRecordUseCase.insert(MockRecordMapper.toMockRecord(mockRecordDTO));
       const response = MockRecordMapper.toMockRecordDTO(mockRecord);
 

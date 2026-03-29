@@ -9,9 +9,8 @@ export class MockController {
 
   public insert = async (req: Request, res: Response): Promise<void> => {
     try {
-      // const { id } = req.params;
       const mockId = Array.isArray(req.params.mockId) ? req.params.mockId[0] : req.params.mockId || "";
-      const mockDTO = new MockDTO(req.body);
+      const mockDTO = new MockDTO({ data: req.body });
 
       const mock = await this.mockUseCase.insert(mockId, MockMapper.toMock(mockDTO));
       const response = MockMapper.toMockDTO(mock);
@@ -37,9 +36,10 @@ export class MockController {
     try {
       const mockId = Array.isArray(req.params.mockId) ? req.params.mockId[0] : req.params.mockId || "";
       const mocks = await this.mockUseCase.getAll(mockId);
-      const response = MockMapper.toMockDTO(mocks);
+      const mockDTOs = MockMapper.toMockDTOs(mocks);
 
-      res.status(200).json(response.data);
+      // Return the array of data directly to match old behavior, or the list of DTOs
+      res.status(200).json(mockDTOs.map(dto => dto.data));
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({

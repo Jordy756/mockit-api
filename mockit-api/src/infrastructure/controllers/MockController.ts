@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { ZodError } from "zod";
-import { CreateMockDTO } from "../../application/dtos/CreateMockDTO.js";
+import { CreateMockDTO } from "../../application/dtos/MockDTO.js";
 import { MockMapper } from "../../application/mappers/MockMapper.js";
 import { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
 

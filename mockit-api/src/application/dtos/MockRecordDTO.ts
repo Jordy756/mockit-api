@@ -1,23 +1,34 @@
 import { z } from "zod";
-import { MockDTO } from "./MockDTO.js";
+import { GetMockDTO } from "./MockDTO.js";
 
-const schema = z.object({
-  id: z.string().uuid(),
-  mocks: z.array(z.instanceof(MockDTO)),
+const createMockRecordSchema = z.record(z.string(), z.unknown());
+
+const getMockRecordSchema = z.object({
+  id: z.uuid(),
+  mocks: z.array(z.instanceof(GetMockDTO)),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
 
 interface MockRecordDTOProps {
   id: string;
-  mocks: MockDTO[];
+  mocks: GetMockDTO[];
   createdAt: Date;
   updatedAt: Date;
 }
 
-export class MockRecordDTO {
+export class CreateMockRecordDTO {
+  public readonly mockDTO: Record<string, unknown>;
+
+  constructor(data: Record<string, unknown>) {
+    const parsed = createMockRecordSchema.parse(data);
+    this.mockDTO = parsed;
+  }
+}
+
+export class GetMockRecordDTO {
   public readonly id: string;
-  public readonly mocks: MockDTO[];
+  public readonly mocks: GetMockDTO[];
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 
@@ -31,6 +42,6 @@ export class MockRecordDTO {
   }
 
   private validateForResponse() {
-    return schema.parse(this);
+    return getMockRecordSchema.parse(this);
   }
 }

@@ -18,17 +18,13 @@ export class MockRecordRepository implements IMockRecordRepository {
         updatedAt,
       });
 
-      if (mocks.length > 0) {
-        await tx.insert(mockTable).values(
-          mocks.map((m) => ({
-            id: m.id,
-            recordId: id,
-            data: m.data,
-            createdAt,
-            updatedAt,
-          })),
-        );
-      }
+      await tx.insert(mockTable).values(
+        mocks.map((m) => ({
+          id: m.id,
+          data: m.data,
+          recordId: id,
+        })),
+      );
     });
 
     return mockRecord;

@@ -1,7 +1,11 @@
 import { z } from "zod";
 
-const schema = z.object({
-  id: z.string().uuid(),
+const createMockSchema = z.object({
+  data: z.record(z.string(), z.unknown()),
+});
+
+const getMockSchema = z.object({
+  id: z.uuid(),
   data: z.record(z.string(), z.unknown()),
 });
 
@@ -10,7 +14,16 @@ interface Props {
   data: Record<string, unknown>;
 }
 
-export class MockDTO {
+export class CreateMockDTO {
+  public readonly data: Record<string, unknown>;
+
+  constructor(payload: unknown) {
+    const parsed = createMockSchema.parse(payload);
+    this.data = parsed.data;
+  }
+}
+
+export class GetMockDTO {
   public readonly id: string;
   public readonly data: Record<string, unknown>;
 
@@ -21,7 +34,7 @@ export class MockDTO {
   }
 
   private validateForResponse() {
-    return schema.parse(this);
+    return getMockSchema.parse(this);
   }
 
   // public toJSON() {

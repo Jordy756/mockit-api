@@ -10,11 +10,15 @@ export class MockRecordController {
 
   public insert = async (req: Request, res: Response): Promise<void> => {
     try {
-      const mockRecordDTO = MockRecordDTO.createNew(req.body);
-      const mockRecord = await this.mockRecordUseCase.insert(MockRecordMapper.toMockRecord(mockRecordDTO));
-      const response = MockRecordMapper.toMockRecordDTO(mockRecord);
+      const mockRecordDTO = new MockRecordDTO(req.body);
+      // const mockRecord = await this.mockRecordUseCase.insert(MockRecordMapper.toMockRecord(mockRecordDTO));
+      // const response = MockRecordMapper.toMockRecordDTO(mockRecord);
 
-      res.status(201).json(response);
+      // res.status(201).json(response);
+      res.status(201).json({
+        message: "Mock record inserted successfully",
+        data: mockRecordDTO,
+      });
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({

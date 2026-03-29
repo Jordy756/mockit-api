@@ -10,7 +10,7 @@ export class MockRecordMapper {
   public static toMockRecordDTO({ id, mocks, createdAt, updatedAt }: MockRecord): MockRecordDTO {
     return new MockRecordDTO({
       id,
-      mocks: mocks.map(MockMapper.toMockDTO),
+      mockDTOs: mocks.map(MockMapper.toMockDTO),
       createdAt,
       updatedAt,
     });

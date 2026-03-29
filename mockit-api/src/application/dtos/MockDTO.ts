@@ -5,11 +5,16 @@ const schema = z.object({
   data: z.record(z.string(), z.unknown()),
 });
 
+interface Props {
+  id: string;
+  data: Record<string, unknown>;
+}
+
 export class MockDTO {
-  public readonly id?: string;
+  public readonly id: string;
   public readonly data: Record<string, unknown>;
 
-  constructor({ id, data }: { id?: string; data: Record<string, unknown> }) {
+  constructor({ id, data }: Props) {
     this.id = id;
     this.data = data;
     this.validateForResponse();
@@ -19,10 +24,10 @@ export class MockDTO {
     return schema.parse(this);
   }
 
-  public toJSON() {
-    return {
-      ...(this.id ? { id: this.id } : {}),
-      ...this.data,
-    };
-  }
+  // public toJSON() {
+  //   return {
+  //     ...(this.id ? { id: this.id } : {}),
+  //     ...this.data,
+  //   };
+  // }
 }

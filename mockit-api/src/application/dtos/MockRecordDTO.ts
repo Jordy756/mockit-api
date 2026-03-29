@@ -44,4 +44,13 @@ export class GetMockRecordDTO {
   private validateForResponse() {
     return getMockRecordSchema.parse(this);
   }
+
+  public toJSON() {
+    return {
+      id: this.id,
+      mocks: this.mocks.map((mock) => mock.toJSON()),
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+  }
 }

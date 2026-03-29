@@ -25,19 +25,16 @@ export class MockRepository implements IMockRepository {
         .update(mockTable)
         .set({
           data: mergedData,
-          updatedAt: new Date(),
         })
         .where(eq(mockTable.id, mockId));
 
       return mock;
     }
 
-    const now = new Date();
     await this.sqliteClient.db.insert(mockTable).values({
       id: mockId,
+      recordId: mockId, // Temporarily map to mockId to fulfill types if missing
       data: [data],
-      createdAt: now,
-      updatedAt: now,
     });
 
     return mock;

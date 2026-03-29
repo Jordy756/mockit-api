@@ -37,10 +37,10 @@ export class GetMockDTO {
     return getMockSchema.parse(this);
   }
 
-  // public toJSON() {
-  //   return {
-  //     ...(this.id ? { id: this.id } : {}),
-  //     ...this.data,
-  //   };
-  // }
+  public toJSON() {
+    return {
+      id: this.id,
+      ...this.data,
+    };
+  }
 }

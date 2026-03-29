@@ -7,18 +7,21 @@ import type { IMockRecordUseCase } from "../../domain/interfaces/use-cases/IMock
 export class MockRecordUseCase implements IMockRecordUseCase {
   constructor(private readonly mockRecordRepository: IMockRecordRepository) {}
 
-  public async insert(mockRecord: MockRecord): Promise<MockRecord> {
-    if (mockRecord.mocks.length > 50) {
+  public async insert(data: { mockDTOs: Record<string, unknown>[] }): Promise<MockRecord> {
+    if (data.mockDTOs.length > 50) {
       throw new Error("Cannot insert more than 50 records in a single request.");
     }
 
-    const mocksWithIds = mockRecord.mocks.map((mock) => new Mock({ id: randomUUID(), data: mock.data }));
+    const recordId = randomUUID();
+    const now = new Date();
+
+    const mocksEntities = data.mockDTOs.map((mockData) => new Mock({ id: randomUUID(), data: mockData }));
 
     const recordToInsert = new MockRecord({
-      id: mockRecord.id,
-      mocks: mocksWithIds,
-      createdAt: mockRecord.createdAt,
-      updatedAt: mockRecord.updatedAt,
+      id: recordId,
+      mocks: mocksEntities,
+      createdAt: now,
+      updatedAt: now,
     });
 
     return this.mockRecordRepository.insert(recordToInsert);

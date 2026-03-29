@@ -1,6 +1,6 @@
 import { MockRecord } from "../../entities/MockRecord.js";
 
 export interface IMockRecordUseCase {
-  insert(mockRecord: MockRecord): Promise<MockRecord>;
+  insert(data: { mockDTOs: Record<string, unknown>[] }): Promise<MockRecord>;
   getAll(): Promise<MockRecord[]>;
 }

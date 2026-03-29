@@ -3,14 +3,10 @@ import { MockRecordDTO } from "../dtos/MockRecordDTO.js";
 import { MockMapper } from "./MockMapper.js";
 
 export class MockRecordMapper {
-  public static toMockRecord({ id, mocks, createdAt, updatedAt }: MockRecordDTO): MockRecord {
-    return new MockRecord({ id, mocks: mocks.map(MockMapper.toMock), createdAt, updatedAt });
-  }
-
   public static toMockRecordDTO({ id, mocks, createdAt, updatedAt }: MockRecord): MockRecordDTO {
     return new MockRecordDTO({
       id,
-      mockDTOs: mocks.map(MockMapper.toMockDTO),
+      mocks: mocks.map(MockMapper.toMockDTO),
       createdAt,
       updatedAt,
     });

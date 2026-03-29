@@ -2,7 +2,7 @@ import { z } from "zod";
 import { MockDTO } from "./MockDTO.js";
 
 const schema = z.object({
-  id: z.uuid().optional(),
+  id: z.string().uuid(),
   mocks: z.array(z.instanceof(MockDTO)),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -10,20 +10,20 @@ const schema = z.object({
 
 interface MockRecordDTOProps {
   id: string;
-  mockDTOs: MockDTO[];
+  mocks: MockDTO[];
   createdAt: Date;
   updatedAt: Date;
 }
 
 export class MockRecordDTO {
   public readonly id: string;
-  public readonly mockDTOs: MockDTO[];
+  public readonly mocks: MockDTO[];
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 
-  constructor({ id, mockDTOs, createdAt, updatedAt }: MockRecordDTOProps) {
+  constructor({ id, mocks, createdAt, updatedAt }: MockRecordDTOProps) {
     this.id = id;
-    this.mockDTOs = mockDTOs;
+    this.mocks = mocks;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
 
@@ -33,15 +33,4 @@ export class MockRecordDTO {
   private validateForResponse() {
     return schema.parse(this);
   }
-
-  // public toJSON() {
-  //   return {
-  //     id: this.id,
-  //     mockDTO: {
-  //       data: this.mocks.map((mock) => mock.toJSON()),
-  //     },
-  //     createdAt: this.createdAt.toISOString(),
-  //     updatedAt: this.updatedAt.toISOString(),
-  //   };
-  // }
 }

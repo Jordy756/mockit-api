@@ -9,10 +9,9 @@ export class MockController {
 
   public insert = async (req: Request, res: Response): Promise<void> => {
     try {
-      const mockId = Array.isArray(req.params.mockId) ? req.params.mockId[0] : req.params.mockId || "";
-      const createDTO = new CreateMockDTO({ data: req.body });
-
-      const mock = await this.mockUseCase.insert(mockId, createDTO);
+      const recordId = Array.isArray(req.params.mockId) ? req.params.mockId[0] : req.params.mockId || "";
+      const mockDTO = new CreateMockDTO(req.body);
+      const mock = await this.mockUseCase.insert(recordId, mockDTO);
       const response = MockMapper.toMockDTO(mock);
 
       res.status(201).json(response);

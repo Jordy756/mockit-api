@@ -1,8 +1,6 @@
 import { z } from "zod";
 
-const createMockSchema = z.object({
-  data: z.record(z.string(), z.unknown()),
-});
+const createMockSchema = z.record(z.string(), z.unknown());
 
 const getMockSchema = z.object({
   id: z.uuid(),
@@ -18,8 +16,9 @@ export class CreateMockDTO {
   public readonly data: Record<string, unknown>;
 
   constructor(payload: unknown) {
+    // Validates that the payload itself is an object (record), matching the flat input
     const parsed = createMockSchema.parse(payload);
-    this.data = parsed.data;
+    this.data = parsed;
   }
 }
 

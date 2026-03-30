@@ -1,51 +1,18 @@
 import { z } from "zod";
 
-const createMockSchema = z.record(z.string(), z.unknown());
+export const createMockSchema = z.record(z.string(), z.unknown());
 
-const updateMockSchema = z.object({
+export const updateMockSchema = z.object({
   id: z.uuid(),
   data: z.record(z.string(), z.unknown()),
 });
 
-const getMockSchema = z.object({
-  id: z.uuid(),
-  data: z.record(z.string(), z.unknown()),
-});
+export const mockResponseSchema = z
+  .object({
+    id: z.uuid(),
+  })
+  .catchall(z.unknown());
 
-interface Props {
-  id: string;
-  data: Record<string, unknown>;
-}
-
-export class CreateMockDTO {
-  public readonly data: Record<string, unknown>;
-
-  constructor(payload: unknown) {
-    const parsed = createMockSchema.parse(payload);
-    this.data = parsed;
-  }
-}
-
-export const UpdateMockDTO = updateMockSchema;
-
-export class GetMockDTO {
-  public readonly id: string;
-  public readonly data: Record<string, unknown>;
-
-  constructor({ id, data }: Props) {
-    this.id = id;
-    this.data = data;
-    this.validateForResponse();
-  }
-
-  private validateForResponse() {
-    return getMockSchema.parse(this);
-  }
-
-  public toJSON() {
-    return {
-      id: this.id,
-      ...this.data,
-    };
-  }
-}
+export type CreateMockInput = z.infer<typeof createMockSchema>;
+export type UpdateMockInput = z.infer<typeof updateMockSchema>;
+export type MockResponse = z.infer<typeof mockResponseSchema>;

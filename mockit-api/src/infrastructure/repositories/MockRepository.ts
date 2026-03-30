@@ -9,6 +9,7 @@ export class MockRepository implements IMockRepository {
 
   public async insert(mockRecordId: string, mock: Mock): Promise<Mock> {
     const { id, data } = mock;
+    console.log({ id, data });
 
     await this.sqliteClient.db.insert(mockTable).values({
       id: id,

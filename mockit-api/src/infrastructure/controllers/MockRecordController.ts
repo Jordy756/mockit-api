@@ -1,20 +1,18 @@
 import type { Request, Response } from "express";
 import { ZodError } from "zod";
 
-import { CreateMockRecordDTO } from "../../application/dtos/MockRecordDTO.js";
 import { MockRecordMapper } from "../../application/mappers/MockRecordMapper.js";
 import type { IMockRecordUseCase } from "../../domain/interfaces/use-cases/IMockRecordUseCase.js";
+import { createMockRecordSchema } from "../../application/dtos/MockRecordDTO.js";
 
 export class MockRecordController {
   constructor(private readonly mockRecordUseCase: IMockRecordUseCase) {}
 
   public insert = async (req: Request, res: Response): Promise<void> => {
     try {
-      const mockRecordDTO = new CreateMockRecordDTO(req.body);
-      const mockRecord = await this.mockRecordUseCase.insert(
-        MockRecordMapper.toMockRecord(mockRecordDTO),
-      );
-      const response = MockRecordMapper.toMockRecordDTO(mockRecord);
+      const input = createMockRecordSchema.parse(req.body);
+      const mockRecord = await this.mockRecordUseCase.insert(MockRecordMapper.toEntity(input));
+      const response = MockRecordMapper.toResponse(mockRecord);
 
       res.status(201).json(response);
     } catch (error) {
@@ -36,7 +34,7 @@ export class MockRecordController {
   public getAll = async (req: Request, res: Response): Promise<void> => {
     try {
       const mockRecords = await this.mockRecordUseCase.getAll();
-      const response = MockRecordMapper.toMockRecordDTOs(mockRecords);
+      const response = MockRecordMapper.toResponses(mockRecords);
 
       res.status(200).json(response);
     } catch (error) {

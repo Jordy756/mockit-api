@@ -8,6 +8,7 @@ export class MockUseCase implements IMockUseCase {
 
   public async insert(mockRecordId: string, mock: Mock): Promise<Mock> {
     mock.id = randomUUID();
+    console.log(mock.id);
     return this.mockRepository.insert(mockRecordId, mock);
   }
 

@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
 import { ZodError } from "zod";
-import { CreateMockDTO, UpdateMockDTO } from "../../application/dtos/MockDTO.js";
 import { MockMapper } from "../../application/mappers/MockMapper.js";
 import { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
+import { createMockSchema } from "../../application/dtos/MockDTO.js";
 
 export class MockController {
   constructor(private readonly mockUseCase: IMockUseCase) {}
@@ -13,9 +13,9 @@ export class MockController {
         ? req.params.mockRecordId[0]
         : req.params.mockRecordId || "";
 
-      const mockDTO = new CreateMockDTO(req.body);
-      const mock = await this.mockUseCase.insert(mockRecordId, MockMapper.toMock(mockDTO));
-      const response = MockMapper.toMockDTO(mock);
+      const input = createMockSchema.parse(req.body);
+      const mock = await this.mockUseCase.insert(mockRecordId, MockMapper.toEntity(input));
+      const response = MockMapper.toResponse(mock);
 
       res.status(201).json(response);
     } catch (error) {
@@ -36,12 +36,11 @@ export class MockController {
 
   public update = async (req: Request, res: Response): Promise<void> => {
     try {
-      const mockId = Array.isArray(req.params.mockId) ? req.params.mockId[0] : req.params.mockId || "";
-      const updateDTO = UpdateMockDTO.parse(req.body);
-      const mock = await this.mockUseCase.update(mockId, MockMapper.toMock(updateDTO));
-      const response = MockMapper.toMockDTO(mock);
-
-      res.status(200).json(response);
+      // const mockId = Array.isArray(req.params.mockId) ? req.params.mockId[0] : req.params.mockId || "";
+      // const updateDTO = updateMockSchema.parse(req.body);
+      // const mock = await this.mockUseCase.update(mockId, MockMapper.toEntity(updateDTO));
+      // const response = MockMapper.toResponse(mock);
+      // res.status(200).json(response);
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({ message: "Invalid request", errors: error.issues });
@@ -56,12 +55,11 @@ export class MockController {
 
   public patch = async (req: Request, res: Response): Promise<void> => {
     try {
-      const mockId = Array.isArray(req.params.mockId) ? req.params.mockId[0] : req.params.mockId || "";
-      const updateDTO = new CreateMockDTO(req.body);
-      const mock = await this.mockUseCase.patch(mockId, MockMapper.toMock(updateDTO));
-      const response = MockMapper.toMockDTO(mock);
-
-      res.status(200).json(response);
+      // const mockId = Array.isArray(req.params.mockId) ? req.params.mockId[0] : req.params.mockId || "";
+      // const updateDTO = new CreateMockDTO(req.body);
+      // const mock = await this.mockUseCase.patch(mockId, MockMapper.toEntity(updateDTO));
+      // const response = MockMapper.toResponse(mock);
+      // res.status(200).json(response);
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({ message: "Invalid request", errors: error.issues });
@@ -99,9 +97,8 @@ export class MockController {
         ? req.params.mockRecordId[0]
         : req.params.mockRecordId || "";
 
-      console.log({ mockRecordId });
       const mocks = await this.mockUseCase.getAll(mockRecordId);
-      const mockDTOs = MockMapper.toMockDTOs(mocks);
+      const mockDTOs = MockMapper.toResponses(mocks);
 
       res.status(200).json(mockDTOs);
     } catch (error) {

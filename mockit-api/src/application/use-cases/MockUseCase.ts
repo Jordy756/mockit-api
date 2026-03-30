@@ -11,16 +11,22 @@ export class MockUseCase implements IMockUseCase {
     return await this.mockRepository.insert(mockRecordId, mock);
   }
 
-  public async update(mockId: string, mock: Mock): Promise<Mock> {
-    return this.mockRepository.update(mockId, mock);
+  public async update(mockRecordId: string, mockId: string, mock: Mock): Promise<Mock> {
+    mock.id = mockId;
+    return this.mockRepository.update(mockRecordId, mockId, mock);
   }
 
-  public async patch(mockId: string, mock: Mock): Promise<Mock> {
-    return this.mockRepository.patch(mockId, mock);
+  public async patch(mockRecordId: string, mockId: string, mock: Mock): Promise<Mock> {
+    mock.id = mockId;
+    return this.mockRepository.patch(mockRecordId, mockId, mock);
   }
 
-  public async delete(mockId: string): Promise<boolean> {
-    return this.mockRepository.delete(mockId);
+  public async delete(mockRecordId: string, mockId: string): Promise<boolean> {
+    return this.mockRepository.delete(mockRecordId, mockId);
+  }
+
+  public async getById(mockRecordId: string, mockId: string): Promise<Mock | null> {
+    return await this.mockRepository.getById(mockRecordId, mockId);
   }
 
   public async getAll(mockRecordId: string): Promise<Mock[]> {

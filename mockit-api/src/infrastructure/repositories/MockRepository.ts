@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { Mock } from "../../domain/entities/Mock.js";
 import { IMockRepository } from "../../domain/interfaces/repositories/IMockRepository.js";
 import { mockTable } from "./sqlite/schema/mockSchema.js";
@@ -19,11 +19,11 @@ export class MockRepository implements IMockRepository {
     return mock;
   }
 
-  public async update(mockId: string, mock: Mock): Promise<Mock> {
+  public async update(mockRecordId: string, mockId: string, mock: Mock): Promise<Mock> {
     const rows = await this.sqliteClient.db
       .update(mockTable)
       .set({ data: mock.data })
-      .where(eq(mockTable.id, mockId))
+      .where(and(eq(mockTable.id, mockId), eq(mockTable.recordId, mockRecordId)))
       .returning({ id: mockTable.id, data: mockTable.data });
 
     if (rows.length === 0) throw new Error("Mock not found");
@@ -31,11 +31,11 @@ export class MockRepository implements IMockRepository {
     return mock;
   }
 
-  public async patch(mockId: string, mock: Mock): Promise<Mock> {
+  public async patch(mockRecordId: string, mockId: string, mock: Mock): Promise<Mock> {
     const existing = await this.sqliteClient.db
       .select({ data: mockTable.data })
       .from(mockTable)
-      .where(eq(mockTable.id, mockId))
+      .where(and(eq(mockTable.id, mockId), eq(mockTable.recordId, mockRecordId)))
       .limit(1);
 
     if (existing.length === 0) throw new Error("Mock not found");
@@ -48,23 +48,35 @@ export class MockRepository implements IMockRepository {
     await this.sqliteClient.db
       .update(mockTable)
       .set({ data: mergedData })
-      .where(eq(mockTable.id, mockId))
+      .where(and(eq(mockTable.id, mockId), eq(mockTable.recordId, mockRecordId)))
       .returning({ id: mockTable.id, data: mockTable.data });
 
     return mock;
   }
 
-  public async delete(mockId: string): Promise<boolean> {
+  public async delete(mockRecordId: string, mockId: string): Promise<boolean> {
     const rows = await this.sqliteClient.db
       .delete(mockTable)
-      .where(eq(mockTable.id, mockId))
+      .where(and(eq(mockTable.id, mockId), eq(mockTable.recordId, mockRecordId)))
       .returning({ id: mockTable.id });
 
     return rows.length > 0;
   }
 
-  public async getAll(recordId: string): Promise<Mock[]> {
-    const rows = await this.sqliteClient.db.select().from(mockTable).where(eq(mockTable.recordId, recordId));
+  public async getById(mockRecordId: string, mockId: string): Promise<Mock | null> {
+    const rows = await this.sqliteClient.db
+      .select({ id: mockTable.id, data: mockTable.data })
+      .from(mockTable)
+      .where(and(eq(mockTable.id, mockId), eq(mockTable.recordId, mockRecordId)))
+      .limit(1);
+
+    if (rows.length === 0) return null;
+
+    return new Mock(rows[0]);
+  }
+
+  public async getAll(mockRecordId: string): Promise<Mock[]> {
+    const rows = await this.sqliteClient.db.select().from(mockTable).where(eq(mockTable.recordId, mockRecordId));
 
     return rows.length === 0 ? [] : rows.map(({ id, data }) => new Mock({ id, data }));
   }

@@ -2,10 +2,7 @@ import { z } from "zod";
 
 export const createMockSchema = z.record(z.string(), z.unknown());
 
-export const updateMockSchema = z.object({
-  id: z.uuid(),
-  data: z.record(z.string(), z.unknown()),
-});
+export const updateMockSchema = z.record(z.string(), z.unknown());
 
 export const mockResponseSchema = z
   .object({

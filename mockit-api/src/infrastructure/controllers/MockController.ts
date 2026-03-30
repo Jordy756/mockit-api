@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
 import { ZodError } from "zod";
+import { createMockSchema, updateMockSchema } from "../../application/dtos/MockDTO.js";
 import { MockMapper } from "../../application/mappers/MockMapper.js";
 import { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
-import { createMockSchema } from "../../application/dtos/MockDTO.js";
 
 export class MockController {
   constructor(private readonly mockUseCase: IMockUseCase) {}
@@ -15,9 +15,8 @@ export class MockController {
 
       const input = createMockSchema.parse(req.body);
       const mock = await this.mockUseCase.insert(mockRecordId, MockMapper.toEntity(input));
-      const response = MockMapper.toResponse(mock);
 
-      res.status(201).json(response);
+      res.status(201).json(MockMapper.toResponse(mock));
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({
@@ -36,11 +35,14 @@ export class MockController {
 
   public update = async (req: Request, res: Response): Promise<void> => {
     try {
-      // const mockId = Array.isArray(req.params.mockId) ? req.params.mockId[0] : req.params.mockId || "";
-      // const updateDTO = updateMockSchema.parse(req.body);
-      // const mock = await this.mockUseCase.update(mockId, MockMapper.toEntity(updateDTO));
-      // const response = MockMapper.toResponse(mock);
-      // res.status(200).json(response);
+      const mockRecordId = Array.isArray(req.params.mockRecordId)
+        ? req.params.mockRecordId[0]
+        : req.params.mockRecordId || "";
+      const mockId = Array.isArray(req.params.mockId) ? req.params.mockId[0] : req.params.mockId || "";
+      const updateDTO = updateMockSchema.parse(req.body);
+      const mock = await this.mockUseCase.update(mockRecordId, mockId, MockMapper.toEntity(updateDTO));
+
+      res.status(200).json(MockMapper.toResponse(mock));
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({ message: "Invalid request", errors: error.issues });
@@ -55,11 +57,14 @@ export class MockController {
 
   public patch = async (req: Request, res: Response): Promise<void> => {
     try {
-      // const mockId = Array.isArray(req.params.mockId) ? req.params.mockId[0] : req.params.mockId || "";
-      // const updateDTO = new CreateMockDTO(req.body);
-      // const mock = await this.mockUseCase.patch(mockId, MockMapper.toEntity(updateDTO));
-      // const response = MockMapper.toResponse(mock);
-      // res.status(200).json(response);
+      const mockRecordId = Array.isArray(req.params.mockRecordId)
+        ? req.params.mockRecordId[0]
+        : req.params.mockRecordId || "";
+      const mockId = Array.isArray(req.params.mockId) ? req.params.mockId[0] : req.params.mockId || "";
+      const updateDTO = updateMockSchema.parse(req.body);
+      const mock = await this.mockUseCase.patch(mockRecordId, mockId, MockMapper.toEntity(updateDTO));
+
+      res.status(200).json(MockMapper.toResponse(mock));
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({ message: "Invalid request", errors: error.issues });
@@ -74,8 +79,11 @@ export class MockController {
 
   public delete = async (req: Request, res: Response): Promise<void> => {
     try {
+      const mockRecordId = Array.isArray(req.params.mockRecordId)
+        ? req.params.mockRecordId[0]
+        : req.params.mockRecordId || "";
       const mockId = Array.isArray(req.params.mockId) ? req.params.mockId[0] : req.params.mockId || "";
-      const deleted = await this.mockUseCase.delete(mockId);
+      const deleted = await this.mockUseCase.delete(mockRecordId, mockId);
 
       if (!deleted) {
         res.status(404).json({ message: "Mock not found" });
@@ -91,6 +99,28 @@ export class MockController {
     }
   };
 
+  public getById = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const mockRecordId = Array.isArray(req.params.mockRecordId)
+        ? req.params.mockRecordId[0]
+        : req.params.mockRecordId || "";
+      const mockId = Array.isArray(req.params.mockId) ? req.params.mockId[0] : req.params.mockId || "";
+      const mock = await this.mockUseCase.getById(mockRecordId, mockId);
+
+      if (!mock) {
+        res.status(404).json({ message: "Mock not found" });
+        return;
+      }
+
+      res.status(200).json(MockMapper.toResponse(mock));
+    } catch (error) {
+      res.status(500).json({
+        message: "Unexpected error while retrieving mock",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  };
+
   public getAll = async (req: Request, res: Response): Promise<void> => {
     try {
       const mockRecordId = Array.isArray(req.params.mockRecordId)
@@ -98,9 +128,8 @@ export class MockController {
         : req.params.mockRecordId || "";
 
       const mocks = await this.mockUseCase.getAll(mockRecordId);
-      const mockDTOs = MockMapper.toResponses(mocks);
 
-      res.status(200).json(mockDTOs);
+      res.status(200).json(MockMapper.toResponses(mocks));
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({

@@ -54,7 +54,7 @@ export class Server {
     this.app.use(json());
     this.app.use(cors());
     this.app.use("/api/mock-records", createMockRecordRoutes(this.mockRecordController));
-    this.app.use("/api/mocks", createMockRoutes(this.mockController));
+    this.app.use("/api/:mockRecordId/mocks", createMockRoutes(this.mockController));
 
     this.app.listen(this.port, () => {
       console.log(`Server is running on http://localhost:${this.port}`);

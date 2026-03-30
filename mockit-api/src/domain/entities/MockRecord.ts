@@ -1,21 +1,21 @@
 import { Mock } from "./Mock.js";
 
-interface MockRecordProps {
+interface Props {
   id: string;
-  mock: Mock;
+  mocks: Mock[];
   createdAt: Date;
   updatedAt: Date;
 }
 
 export class MockRecord {
-  public readonly id: string;
-  public readonly mock: Mock;
-  public readonly createdAt: Date;
-  public readonly updatedAt: Date;
+  public id: string;
+  public mocks: Mock[];
+  public createdAt: Date;
+  public updatedAt: Date;
 
-  constructor({ id, mock, createdAt, updatedAt }: MockRecordProps) {
+  constructor({ id, mocks, createdAt, updatedAt }: Props) {
     this.id = id;
-    this.mock = mock;
+    this.mocks = mocks;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }

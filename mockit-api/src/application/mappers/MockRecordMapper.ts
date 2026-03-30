@@ -1,22 +1,29 @@
+// MockRecordMapper.ts
+import { Mock } from "../../domain/entities/Mock.js";
 import { MockRecord } from "../../domain/entities/MockRecord.js";
-import { MockRecordDTO } from "../dtos/MockRecordDTO.js";
+import { CreateMockRecordInput, MockRecordResponse } from "../dtos/MockRecordDTO.js";
 import { MockMapper } from "./MockMapper.js";
 
 export class MockRecordMapper {
-  public static toMockRecord({ id, mockDTO, createdAt, updatedAt }: MockRecordDTO): MockRecord {
-    return new MockRecord({ id, mock: mockDTO, createdAt, updatedAt });
-  }
-
-  public static toMockRecordDTO({ id, mock, createdAt, updatedAt }: MockRecord): MockRecordDTO {
-    return new MockRecordDTO({
-      id,
-      mockDTO: MockMapper.toMockDTO(mock),
-      createdAt,
-      updatedAt,
+  public static toEntity(input: CreateMockRecordInput): MockRecord {
+    return new MockRecord({
+      id: "",
+      mocks: [new Mock({ id: "", data: input })],
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
   }
 
-  public static toMockRecordDTOs(mocks: MockRecord[]): MockRecordDTO[] {
-    return mocks.map((mock) => this.toMockRecordDTO(mock));
+  public static toResponse(record: MockRecord): MockRecordResponse {
+    return {
+      id: record.id,
+      mocks: MockMapper.toResponses(record.mocks),
+      createdAt: record.createdAt,
+      updatedAt: record.updatedAt,
+    };
+  }
+
+  public static toResponses(records: MockRecord[]): MockRecordResponse[] {
+    return records.map(this.toResponse);
   }
 }

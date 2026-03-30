@@ -1,16 +1,18 @@
+// MockMapper.ts
 import { Mock } from "../../domain/entities/Mock.js";
-import { MockDTO } from "../dtos/MockDTO.js";
+import { CreateMockInput, MockResponse } from "../dtos/MockDTO.js";
 
 export class MockMapper {
-  public static toMock({ data }: MockDTO): Mock {
-    return new Mock(data);
+  public static toEntity(input: CreateMockInput): Mock {
+    const { id: _disposedId, ...cleanData } = input as Record<string, unknown>;
+    return new Mock({ id: "", data: cleanData });
   }
 
-  public static toMockDTO({ data }: Mock): MockDTO {
-    return new MockDTO(data);
+  public static toResponse(mock: Mock): MockResponse {
+    return { id: mock.id, ...mock.data };
   }
 
-  public static toMockDTOs(mocks: Mock[]): MockDTO[] {
-    return mocks.map((mock) => this.toMockDTO(mock));
+  public static toResponses(mocks: Mock[]): MockResponse[] {
+    return mocks.map(this.toResponse);
   }
 }

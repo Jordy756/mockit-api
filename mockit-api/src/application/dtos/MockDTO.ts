@@ -1,20 +1,15 @@
 import { z } from "zod";
 
-const schema = z.object({
-  data: z
-    .union([z.record(z.string(), z.unknown()), z.array(z.record(z.string(), z.unknown()))])
-    .transform((val) => (Array.isArray(val) ? val : [val])),
-});
+export const createMockSchema = z.record(z.string(), z.unknown());
 
-export class MockDTO {
-  public readonly data: Record<string, unknown>[];
+export const updateMockSchema = z.record(z.string(), z.unknown());
 
-  constructor(data: Record<string, unknown>[] | Record<string, unknown>) {
-    this.data = Array.isArray(data) ? data : [data];
-    this.validateForResponse();
-  }
+export const mockResponseSchema = z
+  .object({
+    id: z.uuid(),
+  })
+  .catchall(z.unknown());
 
-  private validateForResponse() {
-    return schema.parse(this);
-  }
-}
+export type CreateMockInput = z.infer<typeof createMockSchema>;
+export type UpdateMockInput = z.infer<typeof updateMockSchema>;
+export type MockResponse = z.infer<typeof mockResponseSchema>;

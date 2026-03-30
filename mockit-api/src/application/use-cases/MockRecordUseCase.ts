@@ -10,7 +10,10 @@ export class MockRecordUseCase implements IMockRecordUseCase {
   public async insert(mockRecord: MockRecord): Promise<MockRecord> {
     const now = new Date();
     const mockEntry = mockRecord.mocks[0].data;
-    const mocksEntities = Array.from({ length: 4 }, () => new Mock({ id: randomUUID(), data: mockEntry }));
+    const mocksEntities = Array.from(
+      { length: 4 },
+      () => new Mock({ id: randomUUID(), data: mockEntry }),
+    );
 
     mockRecord.id = randomUUID();
     mockRecord.createdAt = now;

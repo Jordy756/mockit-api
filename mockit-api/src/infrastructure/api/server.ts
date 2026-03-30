@@ -40,7 +40,10 @@ export class Server {
     this.app.disable("x-powered-by");
     this.app.use(json());
     this.app.use(cors());
-    this.app.use("/api/mock-records", createMockRecordRoutes(this.mockRecordController));
+    this.app.use(
+      "/api/mock-records",
+      createMockRecordRoutes(this.mockRecordController),
+    );
     this.app.use("/api/mocks", createMockRoutes(this.mockController));
 
     this.app.listen(this.port, () => {

@@ -16,7 +16,6 @@ export class CreateMockDTO {
   public readonly data: Record<string, unknown>;
 
   constructor(payload: unknown) {
-    // Validates that the payload itself is an object (record), matching the flat input
     const parsed = createMockSchema.parse(payload);
     this.data = parsed;
   }

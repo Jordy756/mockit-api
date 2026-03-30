@@ -7,47 +7,31 @@ import type { SqliteClient } from "./sqlite/sqlite.client.js";
 export class MockRepository implements IMockRepository {
   constructor(private readonly sqliteClient: SqliteClient) {}
 
-  public async insert(recordId: string, mock: Mock): Promise<Mock> {
+  public async insert(mockRecordId: string, mock: Mock): Promise<Mock> {
     const { id, data } = mock;
 
     await this.sqliteClient.db.insert(mockTable).values({
       id: id,
-      recordId: recordId,
+      recordId: mockRecordId,
       data: data,
     });
 
     return mock;
   }
 
-  public async getAll(recordId: string): Promise<Mock[]> {
-    const rows = await this.sqliteClient.db
-      .select()
-      .from(mockTable)
-      .where(eq(mockTable.recordId, recordId));
-
-    return rows.length === 0
-      ? []
-      : rows.map(({ id, data }) => new Mock({ id, data }));
-  }
-
-  public async update(
-    mockId: string,
-    data: Record<string, unknown>,
-  ): Promise<Mock> {
+  public async update(mockId: string, mock: Mock): Promise<Mock> {
     const rows = await this.sqliteClient.db
       .update(mockTable)
-      .set({ data })
+      .set({ data: mock.data })
       .where(eq(mockTable.id, mockId))
       .returning({ id: mockTable.id, data: mockTable.data });
 
     if (rows.length === 0) throw new Error("Mock not found");
-    return new Mock({ id: rows[0].id, data: rows[0].data });
+
+    return mock;
   }
 
-  public async patch(
-    mockId: string,
-    partialData: Record<string, unknown>,
-  ): Promise<Mock> {
+  public async patch(mockId: string, mock: Mock): Promise<Mock> {
     const existing = await this.sqliteClient.db
       .select({ data: mockTable.data })
       .from(mockTable)
@@ -58,16 +42,16 @@ export class MockRepository implements IMockRepository {
 
     const mergedData = {
       ...(existing[0].data as Record<string, unknown>),
-      ...partialData,
+      ...mock.data,
     };
 
-    const rows = await this.sqliteClient.db
+    await this.sqliteClient.db
       .update(mockTable)
       .set({ data: mergedData })
       .where(eq(mockTable.id, mockId))
       .returning({ id: mockTable.id, data: mockTable.data });
 
-    return new Mock({ id: rows[0].id, data: rows[0].data });
+    return mock;
   }
 
   public async delete(mockId: string): Promise<boolean> {
@@ -77,5 +61,11 @@ export class MockRepository implements IMockRepository {
       .returning({ id: mockTable.id });
 
     return rows.length > 0;
+  }
+
+  public async getAll(recordId: string): Promise<Mock[]> {
+    const rows = await this.sqliteClient.db.select().from(mockTable).where(eq(mockTable.recordId, recordId));
+
+    return rows.length === 0 ? [] : rows.map(({ id, data }) => new Mock({ id, data }));
   }
 }

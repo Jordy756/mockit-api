@@ -2,6 +2,11 @@ import { z } from "zod";
 
 const createMockSchema = z.record(z.string(), z.unknown());
 
+const updateMockSchema = z.object({
+  id: z.uuid(),
+  data: z.record(z.string(), z.unknown()),
+});
+
 const getMockSchema = z.object({
   id: z.uuid(),
   data: z.record(z.string(), z.unknown()),
@@ -20,6 +25,8 @@ export class CreateMockDTO {
     this.data = parsed;
   }
 }
+
+export const UpdateMockDTO = updateMockSchema;
 
 export class GetMockDTO {
   public readonly id: string;

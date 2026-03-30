@@ -1,18 +1,9 @@
 import type { Mock } from "../../entities/Mock.js";
 
 export interface IMockUseCase {
-  insert(
-    recordId: string,
-    data: { data: Record<string, unknown> },
-  ): Promise<Mock>;
-  getAll(recordId: string): Promise<Mock[]>;
-  update(
-    mockId: string,
-    input: { data: Record<string, unknown> },
-  ): Promise<Mock>;
-  patch(
-    mockId: string,
-    input: { data: Record<string, unknown> },
-  ): Promise<Mock>;
+  insert(mockRecordId: string, mock: Mock): Promise<Mock>;
+  update(mockId: string, mock: Mock): Promise<Mock>;
+  patch(mockId: string, mock: Mock): Promise<Mock>;
   delete(mockId: string): Promise<boolean>;
+  getAll(mockRecordId: string): Promise<Mock[]>;
 }

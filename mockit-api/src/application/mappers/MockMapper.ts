@@ -4,7 +4,8 @@ import { CreateMockInput, MockResponse } from "../dtos/MockDTO.js";
 
 export class MockMapper {
   public static toEntity(input: CreateMockInput): Mock {
-    return new Mock({ id: "", data: input });
+    const { id: _disposedId, ...cleanData } = input as Record<string, unknown>;
+    return new Mock({ id: "", data: cleanData });
   }
 
   public static toResponse(mock: Mock): MockResponse {

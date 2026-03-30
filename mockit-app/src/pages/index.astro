@@ -1,10 +1,31 @@
 ---
 import Layout from "@layouts/Layout.astro";
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
 <Layout title="My Astro Site" description="A simple Astro site">
-  <h1 class="text-3xl font-bold underline">Hello world!</h1>
+  <div class="relative grid grid-cols-[auto_1fr] grid-rows-[auto_1fr_auto] gap-4 min-h-screen">
+    <aside class="bg-red-100 col-start-1 row-span-3">
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <header class="bg-red-50 col-start-2 row-start-1 w-full">
+      <button>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <h1>Mockit</h1>
+    </header>
+    <main class="bg-red-200 col-start-2 row-start-2 w-full h-full">
+      <p>Welcome to Mockit!</p>
+    </main>
+    <footer class="bg-red-400 col-start-2 row-start-3 w-full">
+      <p>&copy; 2023 Mockit. All rights reserved.</p>
+    </footer>
+  </div>
 </Layout>

@@ -37,7 +37,8 @@ La aplicación está desplegada en **CubePath**, un proveedor de servidores VPS 
 - [Inicio Rápido](#inicio-rápido)
 - [Estructura del Proyecto](#estructura-del-proyecto)
 - [Arquitectura](#arquitectura)
-- [🌐 Despliegue en CubePath](#-despliegue-en-cubepath)
+- [📡 Endpoints de la API](#-endpoints-de-la-api)
+- [🌐 Cómo se Utilizó CubePath](#-cómo-se-utilizó-cubepath)
 - [Contribuciones](#contribuciones)
 - [Integrantes](#integrantes)
 
@@ -281,11 +282,75 @@ API de Backend
 
 ---
 
-## 🌐 Despliegue en CubePath
+## 📡 Endpoints de la API
+
+### Crear API Mock
+
+**POST** `/api/mock-records`
+
+Crea una nueva API mock a partir de una plantilla JSON.
+
+**Body:**
+```json
+{
+  "template": {
+    "id": "número",
+    "name": "string entre 5 y 20 caracteres",
+    "price": "número entre 10 y 999.99",
+    "category": "de videojuegos"
+  },
+  "count": 10
+}
+```
+
+**Respuesta:**
+```json
+{
+  "id": "abc123xyz",
+  "url": "http://api.mockit.dev/api/abc123xyz",
+  "createdAt": "2026-03-31T10:30:00Z"
+}
+```
+
+### Operaciones CRUD en API Generada
+
+Una vez creada la API mock, puedes realizar las siguientes operaciones:
+
+**GET** `/api/{mockId}/items`
+- Obtiene todos los elementos mock
+- Soporta paginación: `?page=1&limit=10`
+- Soporta filtrado: `?category=RPG&price=49.99`
+- Soporta ordenamiento: `?sortBy=price&order=asc`
+
+**GET** `/api/{mockId}/items/{id}`
+- Obtiene un elemento específico por ID
+
+**POST** `/api/{mockId}/items`
+- Crea un nuevo elemento en la API mock
+- Body: objeto JSON con los campos de la plantilla
+
+**PUT** `/api/{mockId}/items/{id}`
+- Actualiza completamente un elemento existente
+- Body: objeto JSON con todos los campos
+
+**PATCH** `/api/{mockId}/items/{id}`
+- Actualiza parcialmente un elemento existente
+- Body: objeto JSON con los campos a actualizar
+
+**DELETE** `/api/{mockId}/items/{id}`
+- Elimina un elemento específico
+
+---
+
+## 🌐 Cómo se Utilizó CubePath
 
 **CubePath** es un proveedor de servidores VPS (Virtual Private Server) y servidores dedicados de alto rendimiento, diseñado específicamente para desarrolladores y empresas que buscan infraestructura confiable y escalable.
 
-Mockit está desplegado en CubePath, aprovechando:
+Para el **Hackathon CubePath 2026**, Mockit fue desplegado completamente en un servidor VPS **gp.micro** de CubePath con las siguientes especificaciones: **2 vCPU**, **4 GB de RAM**, **80 GB de almacenamiento SSD** y **5 TB de ancho de banda mensual**. 
+
+El despliegue incluye tanto el **frontend** (Astro 6) como el **backend** (Node.js + Express) ejecutándose en el mismo servidor VPS. 
+
+**Ventajas clave de usar CubePath:**
 - **Rendimiento optimizado**: Servidores de alto rendimiento ideales para aplicaciones Node.js
 - **Escalabilidad**: Fácil escalado vertical y horizontal según demanda
 - **Confiabilidad**: Infraestructura robusta con alta disponibilidad

@@ -6,4 +6,5 @@ export const TYPES = {
   IMockUseCase: Symbol.for("IMockUseCase"),
   MockRecordController: Symbol.for("MockRecordController"),
   MockController: Symbol.for("MockController"),
+  IAiDataGeneratorHelper: Symbol.for("IAiDataGeneratorHelper"),
 };

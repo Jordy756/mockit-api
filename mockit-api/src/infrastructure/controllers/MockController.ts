@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { Delete, Get, JsonController, Patch, Post, Put, Req, Res } from "routing-controllers";
 import { ZodError } from "zod";
 import { getAllMocksInputSchema } from "../../application/dtos/GetAllMocksInput.js";
@@ -6,10 +7,12 @@ import { createMockSchema, updateMockSchema } from "../../application/dtos/MockD
 import { MockMapper } from "../../application/mappers/MockMapper.js";
 import { RequestOption } from "../../domain/entities/RequestOption.js";
 import { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
+import { TYPES } from "../di/types.js";
 
+@injectable()
 @JsonController("/api/:mockRecordId/mocks")
 export class MockController {
-  constructor(private readonly mockUseCase: IMockUseCase) {}
+  constructor(@inject(TYPES.IMockUseCase) private readonly mockUseCase: IMockUseCase) {}
 
   @Post("/")
   public async insert(@Req() req: Request, @Res() res: Response): Promise<void> {

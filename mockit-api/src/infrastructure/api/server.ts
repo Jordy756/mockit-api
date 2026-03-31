@@ -2,9 +2,8 @@ import "reflect-metadata";
 import cors from "cors";
 import express, { json } from "express";
 import { useContainer, useExpressServer } from "routing-controllers";
-import { Container } from "typedi";
-import { MockRecordUseCase } from "../../application/use-cases/MockRecordUseCase.js";
-import { MockUseCase } from "../../application/use-cases/MockUseCase.js";
+import { container } from "../di/container.js";
+import { TYPES } from "../di/types.js";
 import { MockController } from "../controllers/MockController.js";
 import { MockRecordController } from "../controllers/MockRecordController.js";
 import { MockRecordRepository } from "../repositories/MockRecordRepository.js";
@@ -36,27 +35,17 @@ export class Server {
 
     this.port = port;
 
-    const aiDataGeneratorHelper = new GeminiDataGeneratorHelper(
-      new GoogleGenAI(
-        {
-          apiKey: GOOGLE_GEMINI_API_KEY
+    useContainer({
+      get: (cls: any) => {
+        if (cls === MockRecordController) {
+          return container.get(TYPES.MockRecordController);
         }
-      ), 
-      GOOGLE_GEMINI_API_MODEL!, 
-      LLM_RESPONSE_MINE_TYPE!
-    );
-  
-    const sqliteClient = new SqliteClient();
-    const mockRecordRepository = new MockRecordRepository(sqliteClient);
-    const mockRepository = new MockRepository(sqliteClient);
-
-    const mockRecordUseCase = new MockRecordUseCase(mockRecordRepository, aiDataGeneratorHelper);
-    const mockUseCase = new MockUseCase(mockRepository);
-
-    Container.set(MockRecordController, new MockRecordController(mockRecordUseCase));
-    Container.set(MockController, new MockController(mockUseCase));
-
-    useContainer(Container);
+        if (cls === MockController) {
+          return container.get(TYPES.MockController);
+        }
+        throw new Error(`Unknown controller: ${cls.name}`);
+      }
+    });
   }
 
   public start() {

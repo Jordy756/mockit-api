@@ -6,8 +6,30 @@ Genera APIs mock listas para producción a partir de plantillas JSON en segundos
 
 ---
 
+## 🚀 Demo
+
+**[Ver Demo](http://mocktit-app-frontend-3nxh5g-612650-144-225-147-108.traefik.me/)** 
+
+La aplicación está desplegada en **CubePath**, un proveedor de servidores VPS de alto rendimiento optimizado para aplicaciones Node.js.
+
+---
+
+## 📸 Capturas de Pantalla
+
+![Mockit - Interfaz Principal](docs/images/mockit.png)
+
+**Características visuales:**
+- Interfaz intuitiva para pegar plantillas JSON
+- Generación instantánea de APIs con URL única
+- Panel de configuración de métodos HTTP
+- Documentación automática de endpoints
+
+---
+
 ## Tabla de Contenidos
 
+- [🚀 Demo](#-demo)
+- [📸 Capturas de Pantalla](#-capturas-de-pantalla)
 - [Descripción General](#descripción-general)
 - [Características Principales](#características-principales)
 - [Cómo Funciona](#cómo-funciona)
@@ -15,10 +37,9 @@ Genera APIs mock listas para producción a partir de plantillas JSON en segundos
 - [Inicio Rápido](#inicio-rápido)
 - [Estructura del Proyecto](#estructura-del-proyecto)
 - [Arquitectura](#arquitectura)
-- [Uso de la API](#uso-de-la-api)
-- [Roadmap](#roadmap)
+- [🌐 Despliegue en CubePath](#-despliegue-en-cubepath)
 - [Contribuciones](#contribuciones)
-- [Licencia](#licencia)
+- [Integrantes](#integrantes)
 
 ---
 
@@ -34,7 +55,7 @@ Genera APIs mock listas para producción a partir de plantillas JSON en segundos
 
 ### Solución
 
-Mockit interpreta plantillas JSON definidas por el usuario, genera de forma inteligente datos mock realistas, y sirve APIs REST dinámicas con soporte completo de CRUD, persistencia de datos y limpieza automática después de 30 días.
+Mockit interpreta plantillas JSON definidas por el usuario, genera de forma inteligente datos mock realistas, y sirve APIs REST dinámicas con soporte completo de CRUD y persistencia de datos.
 
 ---
 
@@ -48,7 +69,6 @@ Mockit interpreta plantillas JSON definidas por el usuario, genera de forma inte
   - Soporte de paginación
   - Ordenamiento por campo
 - **Persistencia de Datos**: APIs almacenadas en base de datos, accesibles entre sesiones del navegador
-- **Limpieza Automática**: Las APIs expiran después de 30 días
 - **Múltiples Dominios**: Funciona con cualquier tipo de entidad (productos, usuarios, pedidos, vehículos, etc.)
 - **Instancias Independientes**: Cada API está completamente aislada
 - **100% Gratuito**: Sin backend requerido, sin API keys, sin registro
@@ -85,7 +105,7 @@ El usuario define una plantilla JSON con:
 - **POST** → Añade nueva entrada al conjunto de datos mock
 - **PUT/PATCH** → Actualiza registro mock existente
 - **DELETE** → Eliminan registro mock
-- Los cambios persisten dentro del ciclo de vida de 30 días
+- Los cambios persisten en la base de datos SQLite local
 
 ---
 
@@ -93,10 +113,10 @@ El usuario define una plantilla JSON con:
 
 ### Frontend
 
-- **React 19** con React Compiler (sin necesidad de useMemo/useCallback)
-- **Vite** para build rápido y HMR
+- **Astro 6** para sitios web estáticos y dinámicos de alto rendimiento
 - **Tailwind CSS 4** para estilos
 - **TypeScript** para seguridad de tipos
+- **Vite** integrado (usado por Astro internamente)
 
 ### Backend
 
@@ -104,8 +124,8 @@ El usuario define una plantilla JSON con:
 - **Hexagonal Architecture** (Ports & Adapters)
 - **TypeScript** en modo strict
 - **Zod 4** para validación en tiempo de ejecución
-- **Base de datos**: PostgreSQL / MongoDB (plan gratuito)
-- **Task Scheduler**: Expiración automática a los 30 días
+- **Base de datos**: SQLite con Better-SQLite3
+- **ORM**: Drizzle ORM para gestión de esquemas y consultas
 
 ### Gestor de Paquetes
 
@@ -117,8 +137,8 @@ El usuario define una plantilla JSON con:
 
 ### Requisitos Previos
 
-- Node.js ≥ 18.x
-- pnpm ≥ 8.x
+- Node.js ≥ 22.12.0
+- pnpm ≥ 10.x
 - Git
 
 ### Instalación
@@ -131,9 +151,8 @@ cd mockit
 # Instala dependencias
 pnpm install
 
-# Configura el ambiente
+# Configura el ambiente (si es necesario)
 cp mockit-api/example.env mockit-api/.env
-# Edita .env con las credenciales de la base de datos
 ```
 
 ### Desarrollo
@@ -143,11 +162,11 @@ cp mockit-api/example.env mockit-api/.env
 cd mockit-api
 pnpm dev
 
-# Frontend: Inicia el servidor Vite (en puerto 5173)
+# Frontend: Inicia el servidor Astro (en puerto 4321)
 cd mockit-app
 pnpm dev
 
-# Visita http://localhost:5173
+# Visita http://localhost:4321
 ```
 
 ### Build para Producción
@@ -189,28 +208,25 @@ mockit/
 │           ├── repositories/    # Acceso a base de datos
 │           └── routes/          # Rutas de la API
 │
-├── mockit-app/                  # Frontend (React + Vite)
+├── mockit-app/                  # Frontend (Astro 6)
 │   ├── AGENTS.md                # Reglas de agentes IA para frontend
 │   ├── package.json
 │   ├── tsconfig.json
-│   ├── vite.config.ts
+│   ├── astro.config.mjs         # Configuración de Astro
 │   └── src/
-│       ├── components/          # Componentes React (diseño atómico)
-│       ├── hooks/               # Hooks personalizados de React
-│       ├── pages/               # Componentes de página
-│       ├── api/                 # Lógica del cliente API
-│       ├── types/               # Tipos compartidos
-│       ├── utils/               # Funciones auxiliares
-│       ├── App.tsx
-│       └── main.tsx
+│       ├── components/          # Componentes Astro/React
+│       ├── layouts/             # Layouts de página
+│       ├── pages/               # Páginas (file-based routing)
+│       ├── scripts/             # Scripts del cliente
+│       └── styles/              # Estilos globales
 │
 ├── .github/skills/              # Librería de skills para agentes IA
 │   ├── typescript/              # Patrones TypeScript
-│   ├── react-19/                # Directrices React 19
+│   ├── react-19/                # Directrices React (si se usa)
 │   ├── tailwind-4/              # Patrones Tailwind CSS
 │   ├── zod-4/                   # Patrones de validación Zod
 │   ├── hexagonal-architecture/  # Guía de arquitectura de backend
-│   └── ...
+│   └── skill-creator/           # Herramienta para crear skills
 │
 ├── AGENTS.md                    # Orquestación de agentes a nivel de proyecto
 └── README.md                    # Este archivo
@@ -241,17 +257,10 @@ Capa de Infraestructura
   - Creación dinámica de rutas
   - Repositorios de base de datos
       ↓
-Base de Datos (PostgreSQL/MongoDB)
+Base de Datos (SQLite)
 ```
 
-**Principios de Diseño Clave**:
-
-- La lógica de dominio es **agnóstica de framework**
-- Las dependencias se **inyectan** mediante interfaces
-- **Sin código de framework** en la capa de dominio
-- Cada capa tiene **una sola responsabilidad**
-
-### Frontend: React 19 + Compiler
+### Frontend: Astro 6 + Tailwind CSS
 
 ```
 Interfaz de Usuario
@@ -259,142 +268,28 @@ Interfaz de Usuario
   - Panel de configuración
   - Pantalla de URL de la API
       ↓
-Componentes React (Atómicos)
-  - Componente JSONInput
-  - Componente APIConfigure
-  - Pantalla APIResult
+Páginas Astro (File-based Routing)
+  - index.astro (página principal)
+  - Componentes reutilizables
       ↓
-Cliente Fetch API (Tipado)
+Componentes Interactivos
+  - Scripts del cliente (TypeScript)
+  - Fetch API para comunicación con backend
       ↓
 API de Backend
 ```
 
-**Patrones Clave**:
-
-- Sin memoización manual (React Compiler lo maneja)
-- Props siempre tipados con interfaces
-- Gestión de estado mediante hooks
-- Tailwind CSS para estilos (sin archivos CSS)
-
 ---
 
-## Uso de la API
+## 🌐 Despliegue en CubePath
 
-### Generar API Mock
+**CubePath** es un proveedor de servidores VPS (Virtual Private Server) y servidores dedicados de alto rendimiento, diseñado específicamente para desarrolladores y empresas que buscan infraestructura confiable y escalable.
 
-**Solicitud**:
-
-```bash
-curl -X POST http://localhost:3000/api/mock-apis \
-  -H "Content-Type: application/json" \
-  -d '{
-    "template": {
-      "id": "número",
-      "name": "string entre 5 y 20 caracteres",
-      "price": "número entre 10 y 999.99",
-      "category": "de videojuegos"
-    },
-    "count": 10,
-    "methods": ["GET", "POST", "PUT", "DELETE"]
-  }'
-```
-
-**Respuesta**:
-
-```json
-{
-  "id": "abc123xyz",
-  "url": "https://mockit.dev/api/abc123xyz",
-  "expiresAt": "2026-04-24T10:30:00Z",
-  "documentation": {
-    "baseURL": "https://mockit.dev/api/abc123xyz",
-    "endpoints": [
-      "GET /items",
-      "POST /items",
-      "GET /items/:id",
-      "PUT /items/:id",
-      "DELETE /items/:id"
-    ]
-  }
-}
-```
-
-### Usar API Generada
-
-```bash
-# Obtén todos los elementos
-curl https://mockit.dev/api/abc123xyz/items
-
-# Obtén con paginación y filtro
-curl 'https://mockit.dev/api/abc123xyz/items?page=1&limit=10&category=RPG'
-
-# Crear elemento
-curl -X POST https://mockit.dev/api/abc123xyz/items \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Nuevo Producto", "price": 49.99}'
-
-# Actualizar elemento
-curl -X PUT https://mockit.dev/api/abc123xyz/items/1 \
-  -d '{"price": 39.99}'
-
-# Eliminar elemento
-curl -X DELETE https://mockit.dev/api/abc123xyz/items/1
-```
-
----
-
-## Directrices de Desarrollo
-
-### Calidad de Código
-
-- **Seguridad de Tipos**: `strict: true` en tsconfig
-- **Sin tipos `any`**: Usa `unknown` o genéricos
-- **Validación**: Zod en límites de API
-- **Testing**: Tests unitarios para lógica de dominio (por agregar)
-
-### Commits y Ramas
-
-- Ramas de features: `feature/descripción`
-- Correcciones: `fix/descripción`
-- Todos los commits deben pasar: `tsc --noEmit` + ESLint
-
-### Skills y Agentes
-
-Cada parte del proyecto tiene reglas de agentes en archivos `AGENTS.md`:
-
-- **Raíz**: [AGENTS.md](AGENTS.md) — Orquestación de proyecto
-- **Backend**: [mockit-api/AGENTS.md](mockit-api/AGENTS.md) — Patrones de backend
-- **Frontend**: [mockit-app/AGENTS.md](mockit-app/AGENTS.md) — Patrones de frontend
-
-Los agentes IA siguen estas reglas para generar código consistente.
-
----
-
-## Roadmap
-
-### Fase 1: MVP (Actual)
-
-- ✓ Generación de API a partir de plantillas JSON
-- ✓ Operaciones CRUD completas
-- ✓ Filtrado de consultas y paginación
-- ✓ Expiración de 30 días
-- Interfaz frontend (en progreso)
-
-### Fase 2: Mejora (Q2 2026)
-
-- [ ] Generación de plantillas asistida por IA ("describe qué necesitas en lenguaje natural")
-- [ ] Generación de datos avanzada con relaciones
-- [ ] Limitación de velocidad para prevenir abuso
-- [ ] Panel de análisis de uso
-- [ ] Historial de API y versionado
-
-### Fase 3: Escala (Q3 2026+)
-
-- [ ] Autenticación de usuarios y cuentas
-- [ ] APIs privadas/compartidas
-- [ ] Planes premium (límites más altos, retención más larga)
-- [ ] Generadores de datos personalizados (scripts Lua)
-- [ ] Soporte GraphQL
+Mockit está desplegado en CubePath, aprovechando:
+- **Rendimiento optimizado**: Servidores de alto rendimiento ideales para aplicaciones Node.js
+- **Escalabilidad**: Fácil escalado vertical y horizontal según demanda
+- **Confiabilidad**: Infraestructura robusta con alta disponibilidad
+- **Costo-efectivo**: Excelente relación precio-rendimiento para MVPs y producción
 
 ---
 
@@ -404,119 +299,37 @@ Los agentes IA siguen estas reglas para generar código consistente.
 
 1. Haz un fork del repositorio
 2. Crea una rama de feature: `git checkout -b feature/mi-feature`
-3. Sigue las directrices de calidad de código (ver Directrices de Desarrollo)
-4. Commit con mensajes claros: `git commit -m "feat: agregar nueva feature"`
-5. Push y abre un Pull Request
-
-### Estilo de Código
-
-- **Backend**: TypeScript strict, arquitectura Hexagonal (ver [mockit-api/AGENTS.md](mockit-api/AGENTS.md))
-- **Frontend**: React 19, componentes atómicos, Tailwind (ver [mockit-app/AGENTS.md](mockit-app/AGENTS.md))
-- **Todo**: Inglés en código y comentarios, máximo 250 líneas por archivo
-
----
-
-## Solución de Problemas
-
-### El backend no inicia
-
-```bash
-# Verifica variables de entorno
-cat mockit-api/.env
-
-# Verifica la conexión a la base de datos
-pnpm run test:db
-
-# Reconstruye TypeScript
-pnpm run build
-```
-
-### Frontend muestra página en blanco
-
-```bash
-# Limpia caché de Vite
-rm -rf mockit-app/node_modules/.vite
-
-# Reinstala dependencias
-cd mockit-app && pnpm install
-```
-
-### Errores de tipo en build
-
-```bash
-# Ejecuta verificación de tipos
-tsc --noEmit
-
-# Verifica tipos faltantes
-pnpm run build
-```
+3. Commit con mensajes claros: `git commit -m "feat: agregar nueva feature"`
+4. Push y abre un Pull Request
 
 ---
 
 ## Variables de Entorno
 
-Crea `mockit-api/.env`:
+Crea `mockit-api/.env` (opcional):
 
-```
-# Base de Datos
-DATABASE_URL=postgresql://usuario:contraseña@localhost:5432/mockit
-# o
-DATABASE_URL=mongodb+srv://usuario:contraseña@cluster.mongodb.net/mockit
-
+```env
 # Servidor
 PORT=3000
 NODE_ENV=development
 
-# Seguridad (agregar después)
-API_KEY_SECRET=tu-clave-secreta
+# Base de Datos SQLite (archivo local, no requiere configuración)
+# La base de datos se crea automáticamente en mockit-api/database.db
+
+# Rate Limiting
+RATE_LIMIT_TIME_LAPSE=900000
+RATE_LIMIT_REQUEST_LIMIT=100
+RATE_LIMIT_LEGACY_HEADERS=false
 ```
 
 ---
 
-## Rendimiento y Escalabilidad
+## Integrantes
 
-- **Aislamiento de API**: Cada API generada tiene un espacio de nombres de rutas independiente
-- **Indexación de Base de Datos**: APIs mock indexadas por `id`, `expiresAt` para consultas rápidas
-- **Paginación Predeterminada**: Endpoints GET pagina por defecto (límite 100 elementos)
-- **Memoria**: Carga lazy de conjuntos de datos mock solo cuando se accede
-- **Expiración**: Trabajo en segundo plano limpia APIs expiradas diariamente
+- **[@Jordy756](https://github.com/Jordy756)**
+- **[@ErnestoVegaRodriguez](https://github.com/ErnestoVegaRodriguez)**
+- **[@KennethTorres](https://github.com/KennethTorres)**
 
 ---
 
-## Consideraciones de Seguridad
 
-- **Validación de Entrada**: Todas las plantillas JSON validadas con Zod
-- **Limitación de Velocidad**: Planeado para Fase 2 (prevenir abuso de generación de API)
-- **CORS**: Configurado para permitir solicitudes del frontend
-- **Sin Autenticación (MVP)**: Planeado para Fase 3 (cuentas de usuario y APIs privadas)
-- **Inyección SQL**: Usa consultas parametrizadas mediante ORM
-
----
-
-## Licencia
-
-ISC — Ver [LICENSE](LICENSE) para detalles.
-
----
-
-## Soporte y Preguntas
-
-- Abre un [issue](https://github.com/usuario/mockit/issues) en GitHub
-- Verifica [CONTRIBUTING.md](CONTRIBUTING.md) para la configuración de desarrollo
-
----
-
-## Reconocimientos
-
-Construido con:
-
-- [React 19](https://react.dev)
-- [Express](https://expressjs.com)
-- [TypeScript](https://www.typescriptlang.org)
-- [Vite](https://vitejs.dev)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Zod](https://zod.dev)
-
----
-
-**Última Actualización**: 25 de Marzo de 2026 | **Estado**: MVP

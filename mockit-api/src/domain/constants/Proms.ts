@@ -1,6 +1,5 @@
-export const PromGenerator = (schema: Record<string, unknown>, count: number) : string => {
-
-    const prom: string = ` 
+export const PromGenerator = (schema: Record<string, unknown>, count: number): string => {
+  const prom: string = ` 
         Eres un generador de datos de prueba (mock data). 
         Se te da un JSON de ejemplo con campos y sus descripciones.
         Debes generar ${count} objetos JSON con datos REALISTAS y VARIADOS.
@@ -23,5 +22,5 @@ export const PromGenerator = (schema: Record<string, unknown>, count: number) : 
         Solo el array puro.
     `;
 
-    return prom;
+  return prom;
 };

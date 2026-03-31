@@ -8,26 +8,18 @@ import type { IMockRecordUseCase } from "../../domain/interfaces/use-cases/IMock
 export class MockRecordUseCase implements IMockRecordUseCase {
   constructor(
     private readonly mockRecordRepository: IMockRecordRepository,
-    private readonly aiDataGeneratorHelper: IAiDataGeneratorHelper) {}
+    private readonly aiDataGeneratorHelper: IAiDataGeneratorHelper,
+  ) {}
 
   public async insert(mockRecord: MockRecord): Promise<MockRecord> {
     const now = new Date();
-    const mockEntry = mockRecord.mocks[0].data;
-    const mocksEntities = Array.from(
-      { length: 4 },
-      () => new Mock({ id: randomUUID(), data: mockEntry }),
-    );
-
+    const mockEntry = mockRecord.mocks[0];
+    const generatedData = await this.aiDataGeneratorHelper.generateData(mockEntry);
+    
     mockRecord.id = randomUUID();
     mockRecord.createdAt = now;
     mockRecord.updatedAt = now;
-    mockRecord.mocks = mocksEntities;
-
-    // var generatedData = await this.aiDataGeneratorHelper.generateData(mockRecord.mock);
-    
-    // generatedData.data.forEach(item => {
-    //   mockRecord.mock.data.push(item);  
-    // });
+    mockRecord.mocks = generatedData;
 
     return this.mockRecordRepository.insert(mockRecord);
   }

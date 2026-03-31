@@ -1,34 +1,41 @@
+import { randomUUID } from "crypto";
 import { GoogleGenAI } from "@google/genai";
-import { IAiDataGeneratorHelper } from '../../domain/interfaces/helpers/IAiDataGeneratorHelper.js';
-import { AIResponse } from '../../domain/entities/AIResponse.js';
+import { IAiDataGeneratorHelper } from "../../domain/interfaces/helpers/IAiDataGeneratorHelper.js";
 import { PromGenerator } from "../../domain/constants/Proms.js";
-import { Mock } from '../../domain/entities/Mock.js';
+import { Mock } from "../../domain/entities/Mock.js";
 
 export class GeminiDataGeneratorHelper implements IAiDataGeneratorHelper {
-    
-    constructor(
-        private readonly ai: GoogleGenAI,
-        private readonly model: string,
-        private readonly responseMimeType: string
-    ){}
-    
-    public async generateData(mock: Mock, count: number = 10): Promise<AIResponse> {
-        
-        var prom = PromGenerator(mock.data[0], count);
-        
-        const response = await this.ai.models.generateContent({
-            model: this.model,
-            contents: prom,
-            config: {
-                responseMimeType: this.responseMimeType,
-            }
-        });
+  constructor(
+    private readonly ai: GoogleGenAI,
+    private readonly model: string,
+    private readonly responseMimeType: string,
+  ) {}
 
-        if (!response.text) 
-            throw new Error("No fue posible generar la informacion necesaria. Intente mas tarde.");
-        
+  public async generateData(schameExample: Mock, countValue: number = 5): Promise<Mock[]> {
+    const prom = PromGenerator(schameExample.data, countValue);
 
-        return new AIResponse(JSON.parse(response.text));
-    }
-    
+    const response = await this.ai.models.generateContent({
+      model: this.model,
+      contents: prom,
+      config: {
+        responseMimeType: this.responseMimeType,
+      },
+    });
+
+    if (!response.text) throw new Error("No fue posible generar la informacion necesaria. Intente mas tarde.");
+
+    const responseContent = JSON.parse(response.text);
+
+    const generateData: Mock[] = responseContent.map(
+      (data: Record<string, unknown>) => 
+        new Mock(
+          { 
+            id: randomUUID(), 
+            data: data 
+          }
+        ),
+    );
+
+    return generateData;
+  }
 }

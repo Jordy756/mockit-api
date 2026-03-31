@@ -2,16 +2,8 @@
 
 @theme {
   /* Primary Colors */
-  --primary-50: #edebfb;
-  --primary-100: #dcd8f8;
-  --primary-200: #cac4f4;
-  --primary-300: #b8b0f0;
-  --primary-400: #a79ded;
-  --primary-500: #8a63ff;
-  --primary-600: #6655df;
-  --primary-700: #3c27d0;
-  --primary-800: #2d1d9c;
-  --primary-900: #1e1368;
+  --color-primary: #9599EC;
+  --color-tertiary: #E67BB9;
 
   --max-width: 1564px;
 }
@@ -46,7 +38,7 @@
   }
 
   .btn-secondary {
-    @apply py-2 px-4 bg-neutral-950 text-neutral-50 border border-neutral-50;
+    @apply py-2 px-4 bg-transparent text-neutral-50 border border-neutral-50;
   }
 
   .btn-text {

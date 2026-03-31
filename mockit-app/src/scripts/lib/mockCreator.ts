@@ -38,11 +38,14 @@ const validateJsonFormat = () => {
     const parsed = JSON.parse(jsonTextarea.value);
     jsonTextarea.value = JSON.stringify(parsed, null, 2);
     update(jsonTextarea);
+
     return true;
   } catch (e) {
     livePreviewContent.innerHTML = "";
     livePreviewError.textContent = "El formato JSON es inválido. Por favor, corrige los errores y vuelve a intentarlo.";
     livePreviewError.classList.remove("hidden");
+    copyLinkBtn.classList.add("hidden");
+
     return false;
   }
 };
@@ -55,6 +58,7 @@ const handleGenerateMock = async () => {
   generateMocksBtn.setAttribute("disabled", "true");
   livePreviewSpinner.classList.remove("hidden");
   livePreviewError.classList.add("hidden");
+  copyLinkBtn.classList.add("hidden");
 
   try {
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -64,6 +68,7 @@ const handleGenerateMock = async () => {
 
     mockId = data.id;
     livePreviewContent.innerHTML = syntaxHighlight(JSON.stringify(data, null, 2));
+    copyLinkBtn.classList.remove("hidden");
     copyLinkBtn.removeAttribute("disabled");
   } catch (error) {
     livePreviewError.textContent = "Error al generar los mocks. Por favor, intenta nuevamente.";

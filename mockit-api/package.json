@@ -4,7 +4,7 @@
   "type": "module",
   "main": "dist/app.js",
   "scripts": {
-    "dev": "tsx watch app.ts",
+    "dev": "tsx watch ./app.ts",
     "build": "rimraf ./dist && tsc",
     "start": "npm run build && node dist/app.js"
   },

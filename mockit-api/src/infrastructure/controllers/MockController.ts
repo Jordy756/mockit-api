@@ -2,8 +2,10 @@ import type { Request, Response } from "express";
 import { injectable, inject } from "inversify";
 import { Delete, Get, JsonController, Patch, Post, Put, Req, Res } from "routing-controllers";
 import { ZodError } from "zod";
+import { getAllMocksInputSchema } from "../../application/dtos/GetAllMocksInput.js";
 import { createMockSchema, updateMockSchema } from "../../application/dtos/MockDTO.js";
 import { MockMapper } from "../../application/mappers/MockMapper.js";
+import { RequestOption } from "../../domain/entities/RequestOption.js";
 import { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
 import { TYPES } from "../di/types.js";
 
@@ -138,13 +140,29 @@ export class MockController {
         ? req.params.mockRecordId[0]
         : req.params.mockRecordId || "";
 
-      const mocks = await this.mockUseCase.getAll(mockRecordId);
+      // Extract and validate query parameters
+      const queryParams = getAllMocksInputSchema.parse(req.query);
 
-      res.status(200).json(MockMapper.toResponses(mocks));
+      // Build RequestOption from validated parameters
+      const requestOption = new RequestOption(
+        undefined, // skip will be calculated by the service
+        queryParams.limit,
+        queryParams.page,
+        queryParams.field,
+        queryParams.fieldValue,
+      );
+
+      // Fetch paginated list
+      const listResult = await this.mockUseCase.getAll(mockRecordId, requestOption);
+
+      // Map to response DTO
+      const response = MockMapper.toListResponse(listResult);
+
+      res.status(200).json(response);
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({
-          message: "Invalid request",
+          message: "Invalid query parameters",
           errors: error.issues,
         });
         return;

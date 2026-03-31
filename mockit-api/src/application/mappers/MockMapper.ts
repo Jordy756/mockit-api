@@ -1,6 +1,8 @@
 // MockMapper.ts
+import { List } from "../../domain/entities/List.js";
 import { Mock } from "../../domain/entities/Mock.js";
 import { CreateMockInput, MockResponse } from "../dtos/MockDTO.js";
+import { ListMockDTO } from "../dtos/ListMockDTO.js";
 
 export class MockMapper {
   public static toEntity(input: CreateMockInput): Mock {
@@ -14,5 +16,13 @@ export class MockMapper {
 
   public static toResponses(mocks: Mock[]): MockResponse[] {
     return mocks.map(this.toResponse);
+  }
+
+  public static toListResponse(list: List<Mock>): ListMockDTO {
+    return {
+      items: list.items.map((mock) => this.toResponse(mock)),
+      currentPage: list.currentPage,
+      totalPages: list.totalPages,
+    };
   }
 }

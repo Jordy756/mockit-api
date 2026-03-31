@@ -1,13 +1,16 @@
 import type { Request, Response } from "express";
+import { Delete, Get, JsonController, Patch, Post, Put, Req, Res } from "routing-controllers";
 import { ZodError } from "zod";
 import { createMockSchema, updateMockSchema } from "../../application/dtos/MockDTO.js";
 import { MockMapper } from "../../application/mappers/MockMapper.js";
 import { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
 
+@JsonController("/api/:mockRecordId/mocks")
 export class MockController {
   constructor(private readonly mockUseCase: IMockUseCase) {}
 
-  public insert = async (req: Request, res: Response): Promise<void> => {
+  @Post("/")
+  public async insert(@Req() req: Request, @Res() res: Response): Promise<void> {
     try {
       const mockRecordId = Array.isArray(req.params.mockRecordId)
         ? req.params.mockRecordId[0]
@@ -31,9 +34,10 @@ export class MockController {
         error: error instanceof Error ? error.message : String(error),
       });
     }
-  };
+  }
 
-  public update = async (req: Request, res: Response): Promise<void> => {
+  @Put("/:mockId")
+  public async update(@Req() req: Request, @Res() res: Response): Promise<void> {
     try {
       const mockRecordId = Array.isArray(req.params.mockRecordId)
         ? req.params.mockRecordId[0]
@@ -53,9 +57,10 @@ export class MockController {
         error: error instanceof Error ? error.message : String(error),
       });
     }
-  };
+  }
 
-  public patch = async (req: Request, res: Response): Promise<void> => {
+  @Patch("/:mockId")
+  public async patch(@Req() req: Request, @Res() res: Response): Promise<void> {
     try {
       const mockRecordId = Array.isArray(req.params.mockRecordId)
         ? req.params.mockRecordId[0]
@@ -75,9 +80,10 @@ export class MockController {
         error: error instanceof Error ? error.message : String(error),
       });
     }
-  };
+  }
 
-  public delete = async (req: Request, res: Response): Promise<void> => {
+  @Delete("/:mockId")
+  public async delete(@Req() req: Request, @Res() res: Response): Promise<void> {
     try {
       const mockRecordId = Array.isArray(req.params.mockRecordId)
         ? req.params.mockRecordId[0]
@@ -97,9 +103,10 @@ export class MockController {
         error: error instanceof Error ? error.message : String(error),
       });
     }
-  };
+  }
 
-  public getById = async (req: Request, res: Response): Promise<void> => {
+  @Get("/:mockId")
+  public async getById(@Req() req: Request, @Res() res: Response): Promise<void> {
     try {
       const mockRecordId = Array.isArray(req.params.mockRecordId)
         ? req.params.mockRecordId[0]
@@ -119,9 +126,10 @@ export class MockController {
         error: error instanceof Error ? error.message : String(error),
       });
     }
-  };
+  }
 
-  public getAll = async (req: Request, res: Response): Promise<void> => {
+  @Get("/")
+  public async getAll(@Req() req: Request, @Res() res: Response): Promise<void> {
     try {
       const mockRecordId = Array.isArray(req.params.mockRecordId)
         ? req.params.mockRecordId[0]
@@ -144,5 +152,5 @@ export class MockController {
         error: error instanceof Error ? error.message : String(error),
       });
     }
-  };
+  }
 }

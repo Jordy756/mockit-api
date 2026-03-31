@@ -9,7 +9,7 @@ const initialJson = `{
 }`;
 ---
 
-<section class="relative flex-3 bg-[#0d1117] border border-neutral-800 overflow-hidden">
+<section class="relative flex-3 bg-[#0d1117] min-h-100 border border-neutral-800 overflow-hidden rounded-md">
   <div>
     <textarea
       id="json-textarea"
@@ -20,15 +20,14 @@ const initialJson = `{
     <pre
       id="json-display"
       aria-hidden="true"
-      class="absolute inset-0 p-4 overflow-auto pointer-events-none whitespace-pre-wrap break-all z-0 text-neutral-50">
+      class="absolute inset-0 p-4 overflow-auto pointer-events-none whitespace-pre-wrap break-all text-neutral-50">
     </pre>
   </div>
   <footer class="absolute bottom-4 right-4 flex items-center gap-4 z-20">
     <Button id="format-btn" variant="secondary" class="flex-1">Formatear</Button>
-    <Button id="generate-mocks-btn" class="flex-1 group">
-      <span id="generate-text">Generar Datos</span>
-      <GenerateIcon width={20} class="text-neutral-950 ml-1 inline-block" />
+    <Button id="generate-mocks-btn" class="flex-1">
+      Generar Datos
+      <GenerateIcon class="w-5 h-5" />
     </Button>
   </footer>
 </section>
-

@@ -11,7 +11,7 @@ export class GeminiDataGeneratorHelper implements IAiDataGeneratorHelper {
     private readonly responseMimeType: string,
   ) {}
 
-  public async generateData(schameExample: Mock, countValue: number = 5): Promise<Mock[]> {
+  public async generateData(schameExample: Mock, countValue: number = 10): Promise<Mock[]> {
     const prom = PromGenerator(schameExample.data, countValue);
 
     const response = await this.ai.models.generateContent({

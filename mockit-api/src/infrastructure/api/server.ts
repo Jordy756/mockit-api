@@ -6,14 +6,12 @@ import { container } from "../di/container.js";
 import { TYPES } from "../di/types.js";
 import { MockController } from "../controllers/MockController.js";
 import { MockRecordController } from "../controllers/MockRecordController.js";
-import { MockRecordRepository } from "../repositories/MockRecordRepository.js";
-import { MockRepository } from "../repositories/MockRepository.js";
-import { SqliteClient } from "../repositories/sqlite/sqlite.client.js";
-import { GeminiDataGeneratorHelper } from "../helpers/GeminiDataGeneratorHelper.js";
-import { GoogleGenAI } from "@google/genai";
-import { GOOGLE_GEMINI_API_KEY, GOOGLE_GEMINI_API_MODEL, LLM_RESPONSE_MINE_TYPE } from "../../domain/config/Environment.js";
+import {
+  RATE_LIMIT_TIME_LAPSE,
+  RATE_LIMIT_REQUEST_LIMIT,
+  RATE_LIMIT_LEGACY_HEADERS,
+} from "../../domain/config/Environment.js";
 import rateLimit from "express-rate-limit";
-import { error } from "node:console";
 
 interface Options {
   port?: number;
@@ -23,11 +21,13 @@ export class Server {
   private readonly app = express();
   private readonly port: number;
   private readonly rateLimit = rateLimit({
-    windowMs: 60 * 1000,
-    limit: 5,
-    message: { error: "Se realizaron demaciadas solicitudes un muy poco tiempo." },
-    legacyHeaders: false,
-    standardHeaders: "draft-8"
+    windowMs: parseInt(RATE_LIMIT_TIME_LAPSE!),
+    limit: parseInt(RATE_LIMIT_REQUEST_LIMIT!),
+    message: {
+      error: "Demasiadas solicitudes. Has superado el límite permitido. Por favor, inténtalo de nuevo más tarde.",
+    },
+    legacyHeaders: Boolean(RATE_LIMIT_LEGACY_HEADERS!),
+    standardHeaders: "draft-8",
   });
 
   constructor(options: Options) {
@@ -44,7 +44,7 @@ export class Server {
           return container.get(TYPES.MockController);
         }
         throw new Error(`Unknown controller: ${cls.name}`);
-      }
+      },
     });
   }
 

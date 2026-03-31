@@ -1,8 +1,7 @@
 ---
 import Header from "@components/layout/Header.astro";
 import Sidebar from "@components/layout/Sidebar.astro";
-import JsonEditor from "@components/sections/JsonEditor/JsonEditor.astro";
-import LivePreview from "@components/sections/LivePreview/LivePreview.astro";
+import MockCreator from "@components/sections/MockCreator/MockCreator.astro";
 import Layout from "@layouts/Layout.astro";
 
 const title = "Editor JSON con vista previa en vivo usando Astro | Mockit";
@@ -15,10 +14,7 @@ const description =
     <Sidebar />
     <Header title="schema.json" />
     <main class="col-start-2 row-start-2 w-full h-full overflow-x-auto mesh-gradient">
-      <div class="flex flex-wrap gap-4 h-full p-4">
-        <JsonEditor />
-        <LivePreview />
-      </div>
+      <MockCreator />
     </main>
   </div>
 </Layout>

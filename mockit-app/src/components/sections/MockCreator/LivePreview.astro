@@ -1,5 +1,5 @@
 ---
-
+import Spinner from "@components/icons/Spinner.astro";
 ---
 
 <section class="flex-1 flex flex-col">
@@ -11,7 +11,17 @@
       <span class="w-4 h-4 bg-green-500 rounded-full"></span>
     </button>
   </header>
-  <div class="flex-1 bg-cyan-700 p-4">Repuesta del servidor</div>
+  <div class="flex-1 relative bg-[#010e1a] p-4 overflow-auto">
+    <Spinner
+      id="live-preview-spinner"
+      class="text-cyan-500 animate-spin w-16 h-16 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 hidden"
+    />
+
+    <pre id="live-preview-content" class="whitespace-pre-wrap text-sm text-blue-300"></pre>
+    <p id="live-preview-error" class="text-red-400 hidden">
+      Error al generar los mocks. Por favor, intenta nuevamente.
+    </p>
+  </div>
   <footer class="bg-cyan-800">
     <p class="text-sm text-center p-2 text-neutral-300">
       Powered by <a href="https://vercel.com/templates/astro" class="underline">Vercel Astro Template</a>

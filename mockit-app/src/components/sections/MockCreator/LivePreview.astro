@@ -1,5 +1,31 @@
 ---
 import Spinner from "@components/icons/Spinner.astro";
+
+const initialPreviewContent = `{
+  "id": "0c780009-420a-4ced-b00c-e9e020956ffb",
+  "mocks": [
+    {
+      "id": "447ace33-fa81-4986-a411-6a35cc58c79f",
+      "name": "Jordy",
+      "age": 23,
+      "email": "jordycastro1756@gmail.com"
+    },
+    {
+      "id": "8ed0ccc1-3ec6-4e5e-9fba-56915bc94a0a",
+      "name": "Ernesto",
+      "age": 23,
+      "email": "ernesto@gmail.com"
+    },
+    {
+      "id": "ae8f5c6b-f57e-4b3d-b07d-0387a5fe8dd2",
+      "name": "Kenneth",
+      "age": 23,
+      "email": "kenneth@gmail.com"
+    }
+  ],
+  "createdAt": "2026-03-31T08:58:48.372Z",
+  "updatedAt": "2026-03-31T08:58:48.372Z"
+}`;
 ---
 
 <section class="flex-1 flex flex-col">
@@ -11,13 +37,14 @@ import Spinner from "@components/icons/Spinner.astro";
       <span class="w-4 h-4 bg-green-500 rounded-full"></span>
     </button>
   </header>
-  <div class="flex-1 relative bg-[#010e1a] p-4 overflow-auto">
+  <div class="flex-1 relative bg-[#010e1a] p-4 overflow-hidden">
     <Spinner
       id="live-preview-spinner"
       class="text-cyan-500 animate-spin w-16 h-16 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 hidden"
     />
-
-    <pre id="live-preview-content" class="whitespace-pre-wrap text-sm text-blue-300"></pre>
+    <pre
+      id="live-preview-content"
+      class="overflow-auto pointer-events-none whitespace-pre-wrap break-all z-0 text-neutral-50 text-sm">{initialPreviewContent}</pre>
     <p id="live-preview-error" class="text-red-400 hidden">
       Error al generar los mocks. Por favor, intenta nuevamente.
     </p>

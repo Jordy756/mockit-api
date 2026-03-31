@@ -10,32 +10,40 @@ const livePreviewContent = document.querySelector("#live-preview-content") as HT
 const livePreviewSpinner = document.querySelector("#live-preview-spinner") as SVGElement;
 const livePreviewError = document.querySelector("#live-preview-error") as HTMLElement;
 
-const update = () => {
-  if (!jsonTextarea || !jsonDisplay) return;
-
-  let val = jsonTextarea.value;
+const update = (element: HTMLTextAreaElement | HTMLElement) => {
+  let val = element instanceof HTMLTextAreaElement ? element.value : element.textContent;
 
   if (val.length > 0 && val[val.length - 1] === "\n") val += " ";
 
-  jsonDisplay.innerHTML = syntaxHighlight(val);
+  element instanceof HTMLTextAreaElement
+    ? (jsonDisplay.innerHTML = syntaxHighlight(val))
+    : (element.innerHTML = syntaxHighlight(val));
+};
+
+const updateTextarea = () => {
+  if (!jsonDisplay) return;
+
+  jsonDisplay.scrollTop = jsonTextarea.scrollTop;
+  jsonDisplay.scrollLeft = jsonTextarea.scrollLeft;
 };
 
 const validateJsonFormat = () => {
   try {
     const parsed = JSON.parse(jsonTextarea.value);
     jsonTextarea.value = JSON.stringify(parsed, null, 2);
-    update();
+    update(jsonTextarea);
     return true;
   } catch (e) {
     livePreviewError.textContent = "El JSON ingresado es inválido, por favor corrige los errores antes de formatear.";
+    livePreviewError.classList.remove("hidden");
     return false;
   }
 };
 
-const handleGenerateClick = async () => {
-  console.log("Generando mocks...");
+const handleGenerateMock = async () => {
+  livePreviewContent.innerHTML = "";
+
   if (!validateJsonFormat()) return;
-  console.log("JSON válido, procediendo a generar mocks...");
 
   generateMocksBtn.setAttribute("disabled", "true");
   livePreviewSpinner.classList.remove("hidden");
@@ -57,15 +65,18 @@ const handleGenerateClick = async () => {
   }
 };
 
-jsonTextarea.addEventListener("input", update);
-jsonTextarea.addEventListener("scroll", () => {
-  if (!jsonDisplay) return;
+jsonTextarea.addEventListener("input", () => update(jsonTextarea));
+jsonTextarea.addEventListener("scroll", updateTextarea);
+formatBtn.addEventListener("click", validateJsonFormat);
+generateMocksBtn.addEventListener("click", handleGenerateMock);
 
-  jsonDisplay.scrollTop = jsonTextarea.scrollTop;
-  jsonDisplay.scrollLeft = jsonTextarea.scrollLeft;
-});
+update(jsonTextarea);
+update(livePreviewContent);
 
-formatBtn.addEventListener("click", () => validateJsonFormat);
-generateMocksBtn.addEventListener("click", handleGenerateClick);
-
-update();
+// {
+//   "name": "Nombre de una persona",
+//   "age": "Edad entre 10 y 20 años",
+//   "email": "Correo electrónico de prueba",
+//   "hola": 12,
+//   "nada": 0
+// }

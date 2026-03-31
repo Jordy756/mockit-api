@@ -1,9 +1,7 @@
 ---
-import Generate from "@components/icons/Generate.astro";
 import Header from "@components/layout/Header.astro";
 import Sidebar from "@components/layout/Sidebar.astro";
 import SchemaJSON from "@components/sections/SchemaJSON/SchemaJSON.astro";
-import Button from "@components/ui/Button.astro";
 import Layout from "@layouts/Layout.astro";
 ---
 
@@ -11,12 +9,8 @@ import Layout from "@layouts/Layout.astro";
   <div class="relative grid grid-cols-[auto_1fr] grid-rows-[auto_1fr] min-h-screen">
     <Sidebar />
     <Header title="schema.json - Editor" />
-    <main class="relative col-start-2 row-start-2 w-full h-full p-4 overflow-x-auto">
+    <main class="col-start-2 row-start-2 w-full h-full p-4 overflow-x-auto">
       <SchemaJSON />
-      <Button class="absolute bottom-4 right-4">
-        Generar Datos
-        <Generate width={20} class="text-neutral-950" />
-      </Button>
     </main>
   </div>
 </Layout>

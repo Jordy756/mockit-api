@@ -1,4 +1,7 @@
 ---
+import GenerateIcon from "@components/icons/Generate.astro";
+import Button from "@components/ui/Button.astro";
+
 const JSON = `{
   "openapi": "3.0.0",
   "info": {
@@ -16,6 +19,11 @@ const JSON = `{
 }`;
 ---
 
-<section>
+<section class="relative h-full">
+  <Button class="absolute top-0 right-0" variant="text">Formatear</Button>
+  <Button class="absolute bottom-0 right-0">
+    Generar Datos
+    <GenerateIcon width={20} class="text-neutral-950" />
+  </Button>
   <pre>{JSON}</pre>
 </section>

@@ -3,11 +3,13 @@ import {
   drizzle,
   type BetterSQLite3Database,
 } from "drizzle-orm/better-sqlite3";
+import { injectable } from "inversify";
 
 export interface SqliteClientOptions {
   filename?: string;
 }
 
+@injectable()
 export class SqliteClient {
   private readonly sqlite: Database.Database;
   private readonly connection: BetterSQLite3Database;

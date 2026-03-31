@@ -1,12 +1,15 @@
+import { injectable, inject } from "inversify";
 import { Mock } from "../../domain/entities/Mock.js";
 import { MockRecord } from "../../domain/entities/MockRecord.js";
 import type { IMockRecordRepository } from "../../domain/interfaces/repositories/IMockRecordRepository.js";
 import { mockRecordTable } from "./sqlite/schema/mockRecordSchema.js";
 import { mockTable } from "./sqlite/schema/mockSchema.js";
 import type { SqliteClient } from "./sqlite/sqlite.client.js";
+import { TYPES } from "../di/types.js";
 
+@injectable()
 export class MockRecordRepository implements IMockRecordRepository {
-  constructor(private readonly sqliteClient: SqliteClient) {}
+  constructor(@inject(TYPES.SqliteClient) private readonly sqliteClient: SqliteClient) {}
 
   public async insert(mockRecord: MockRecord): Promise<MockRecord> {
     const { id, mocks, createdAt, updatedAt } = mockRecord;

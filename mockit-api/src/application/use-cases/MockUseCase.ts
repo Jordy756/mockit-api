@@ -1,10 +1,13 @@
 import { randomUUID } from "node:crypto";
+import { injectable, inject } from "inversify";
 import { Mock } from "../../domain/entities/Mock.js";
 import { IMockRepository } from "../../domain/interfaces/repositories/IMockRepository.js";
 import { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
+import { TYPES } from "../../infrastructure/di/types.js";
 
+@injectable()
 export class MockUseCase implements IMockUseCase {
-  constructor(private readonly mockRepository: IMockRepository) {}
+  constructor(@inject(TYPES.IMockRepository) private readonly mockRepository: IMockRepository) {}
 
   public async insert(mockRecordId: string, mock: Mock): Promise<Mock> {
     mock.id = randomUUID();

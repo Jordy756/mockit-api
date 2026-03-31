@@ -1,11 +1,14 @@
 import { randomUUID } from "node:crypto";
+import { injectable, inject } from "inversify";
 import { Mock } from "../../domain/entities/Mock.js";
 import { MockRecord } from "../../domain/entities/MockRecord.js";
 import type { IMockRecordRepository } from "../../domain/interfaces/repositories/IMockRecordRepository.js";
 import type { IMockRecordUseCase } from "../../domain/interfaces/use-cases/IMockRecordUseCase.js";
+import { TYPES } from "../../infrastructure/di/types.js";
 
+@injectable()
 export class MockRecordUseCase implements IMockRecordUseCase {
-  constructor(private readonly mockRecordRepository: IMockRecordRepository) {}
+  constructor(@inject(TYPES.IMockRecordRepository) private readonly mockRecordRepository: IMockRecordRepository) {}
 
   public async insert(mockRecord: MockRecord): Promise<MockRecord> {
     const now = new Date();

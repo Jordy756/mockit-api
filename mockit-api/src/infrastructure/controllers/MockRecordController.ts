@@ -1,14 +1,17 @@
 import type { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { Get, JsonController, Post, Req, Res } from "routing-controllers";
 import { ZodError } from "zod";
 
 import { MockRecordMapper } from "../../application/mappers/MockRecordMapper.js";
 import type { IMockRecordUseCase } from "../../domain/interfaces/use-cases/IMockRecordUseCase.js";
 import { createMockRecordSchema } from "../../application/dtos/MockRecordDTO.js";
+import { TYPES } from "../di/types.js";
 
+@injectable()
 @JsonController("/api/mock-records")
 export class MockRecordController {
-  constructor(private readonly mockRecordUseCase: IMockRecordUseCase) {}
+  constructor(@inject(TYPES.IMockRecordUseCase) private readonly mockRecordUseCase: IMockRecordUseCase) {}
 
   @Post("/")
   public async insert(@Req() req: Request, @Res() res: Response): Promise<void> {

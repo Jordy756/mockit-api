@@ -1,11 +1,14 @@
 import { eq, and } from "drizzle-orm";
+import { injectable, inject } from "inversify";
 import { Mock } from "../../domain/entities/Mock.js";
 import { IMockRepository } from "../../domain/interfaces/repositories/IMockRepository.js";
 import { mockTable } from "./sqlite/schema/mockSchema.js";
 import type { SqliteClient } from "./sqlite/sqlite.client.js";
+import { TYPES } from "../di/types.js";
 
+@injectable()
 export class MockRepository implements IMockRepository {
-  constructor(private readonly sqliteClient: SqliteClient) {}
+  constructor(@inject(TYPES.SqliteClient) private readonly sqliteClient: SqliteClient) {}
 
   public async insert(mockRecordId: string, mock: Mock): Promise<Mock> {
     const { id, data } = mock;

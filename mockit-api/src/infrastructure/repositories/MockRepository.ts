@@ -1,11 +1,17 @@
-import { eq, and } from "drizzle-orm";
+import { injectable, inject } from "inversify";
+import { eq, and, sql } from "drizzle-orm";
+import { List } from "../../domain/entities/List.js";
 import { Mock } from "../../domain/entities/Mock.js";
+import { RequestOption } from "../../domain/entities/RequestOption.js";
 import { IMockRepository } from "../../domain/interfaces/repositories/IMockRepository.js";
+import { PaginationService } from "../services/PaginationService.js";
 import { mockTable } from "./sqlite/schema/mockSchema.js";
 import type { SqliteClient } from "./sqlite/sqlite.client.js";
+import { TYPES } from "../di/types.js";
 
+@injectable()
 export class MockRepository implements IMockRepository {
-  constructor(private readonly sqliteClient: SqliteClient) {}
+  constructor(@inject(TYPES.SqliteClient) private readonly sqliteClient: SqliteClient) {}
 
   public async insert(mockRecordId: string, mock: Mock): Promise<Mock> {
     const { id, data } = mock;
@@ -75,9 +81,50 @@ export class MockRepository implements IMockRepository {
     return new Mock(rows[0]);
   }
 
-  public async getAll(mockRecordId: string): Promise<Mock[]> {
-    const rows = await this.sqliteClient.db.select().from(mockTable).where(eq(mockTable.recordId, mockRecordId));
+  public async getAll(mockRecordId: string, requestOption?: RequestOption): Promise<List<Mock>> {
+    // Default request option if not provided
+    const page = requestOption?.page ?? 1;
+    const limit = requestOption?.limit ?? 10;
+    const field = requestOption?.field;
+    const fieldValue = requestOption?.fieldValue;
 
-    return rows.length === 0 ? [] : rows.map(({ id, data }) => new Mock({ id, data }));
+    // Build base condition
+    let baseCondition = eq(mockTable.recordId, mockRecordId);
+
+    // Add field-value filtering if provided
+    if (field && fieldValue) {
+      // Use json_extract + LIKE for SQLite JSON filtering with substring search
+      baseCondition = and(
+        baseCondition,
+        sql`json_extract(${mockTable.data}, ${"$." + field}) LIKE ${`%${fieldValue}%`}`,
+      ) as any;
+    }
+
+    // Count total items matching the filter (for pagination metadata)
+    const countQuery = await this.sqliteClient.db
+      .select({ count: sql<number>`COUNT(*) as count` })
+      .from(mockTable)
+      .where(baseCondition);
+
+    const totalItems = countQuery[0]?.count ?? 0;
+
+    // Calculate pagination
+    const pagination = PaginationService.calculatePagination(page, limit, totalItems);
+
+    // Fetch paginated results
+    const rows = await this.sqliteClient.db
+      .select({ id: mockTable.id, data: mockTable.data })
+      .from(mockTable)
+      .where(baseCondition)
+      .offset(pagination.skip)
+      .limit(pagination.limit);
+
+    const items = rows.length === 0 ? [] : rows.map(({ id, data }) => new Mock({ id, data }));
+
+    return new List<Mock>({
+      items,
+      currentPage: pagination.currentPage,
+      totalPages: pagination.totalPages,
+    });
   }
 }

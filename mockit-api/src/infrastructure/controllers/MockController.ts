@@ -1,13 +1,21 @@
 import type { Request, Response } from "express";
+import { injectable, inject } from "inversify";
+import { Delete, Get, JsonController, Patch, Post, Put, Req, Res } from "routing-controllers";
 import { ZodError } from "zod";
+import { getAllMocksInputSchema } from "../../application/dtos/GetAllMocksInput.js";
 import { createMockSchema, updateMockSchema } from "../../application/dtos/MockDTO.js";
 import { MockMapper } from "../../application/mappers/MockMapper.js";
+import { RequestOption } from "../../domain/entities/RequestOption.js";
 import { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
+import { TYPES } from "../di/types.js";
 
+@injectable()
+@JsonController("/api/:mockRecordId/mocks")
 export class MockController {
-  constructor(private readonly mockUseCase: IMockUseCase) {}
+  constructor(@inject(TYPES.IMockUseCase) private readonly mockUseCase: IMockUseCase) {}
 
-  public insert = async (req: Request, res: Response): Promise<void> => {
+  @Post("/")
+  public async insert(@Req() req: Request, @Res() res: Response): Promise<void> {
     try {
       const mockRecordId = Array.isArray(req.params.mockRecordId)
         ? req.params.mockRecordId[0]
@@ -31,9 +39,10 @@ export class MockController {
         error: error instanceof Error ? error.message : String(error),
       });
     }
-  };
+  }
 
-  public update = async (req: Request, res: Response): Promise<void> => {
+  @Put("/:mockId")
+  public async update(@Req() req: Request, @Res() res: Response): Promise<void> {
     try {
       const mockRecordId = Array.isArray(req.params.mockRecordId)
         ? req.params.mockRecordId[0]
@@ -53,9 +62,10 @@ export class MockController {
         error: error instanceof Error ? error.message : String(error),
       });
     }
-  };
+  }
 
-  public patch = async (req: Request, res: Response): Promise<void> => {
+  @Patch("/:mockId")
+  public async patch(@Req() req: Request, @Res() res: Response): Promise<void> {
     try {
       const mockRecordId = Array.isArray(req.params.mockRecordId)
         ? req.params.mockRecordId[0]
@@ -75,9 +85,10 @@ export class MockController {
         error: error instanceof Error ? error.message : String(error),
       });
     }
-  };
+  }
 
-  public delete = async (req: Request, res: Response): Promise<void> => {
+  @Delete("/:mockId")
+  public async delete(@Req() req: Request, @Res() res: Response): Promise<void> {
     try {
       const mockRecordId = Array.isArray(req.params.mockRecordId)
         ? req.params.mockRecordId[0]
@@ -97,9 +108,10 @@ export class MockController {
         error: error instanceof Error ? error.message : String(error),
       });
     }
-  };
+  }
 
-  public getById = async (req: Request, res: Response): Promise<void> => {
+  @Get("/:mockId")
+  public async getById(@Req() req: Request, @Res() res: Response): Promise<void> {
     try {
       const mockRecordId = Array.isArray(req.params.mockRecordId)
         ? req.params.mockRecordId[0]
@@ -119,21 +131,38 @@ export class MockController {
         error: error instanceof Error ? error.message : String(error),
       });
     }
-  };
+  }
 
-  public getAll = async (req: Request, res: Response): Promise<void> => {
+  @Get("/")
+  public async getAll(@Req() req: Request, @Res() res: Response): Promise<void> {
     try {
       const mockRecordId = Array.isArray(req.params.mockRecordId)
         ? req.params.mockRecordId[0]
         : req.params.mockRecordId || "";
 
-      const mocks = await this.mockUseCase.getAll(mockRecordId);
+      // Extract and validate query parameters
+      const queryParams = getAllMocksInputSchema.parse(req.query);
 
-      res.status(200).json(MockMapper.toResponses(mocks));
+      // Build RequestOption from validated parameters
+      const requestOption = new RequestOption(
+        undefined, // skip will be calculated by the service
+        queryParams.limit,
+        queryParams.page,
+        queryParams.field,
+        queryParams.fieldValue,
+      );
+
+      // Fetch paginated list
+      const listResult = await this.mockUseCase.getAll(mockRecordId, requestOption);
+
+      // Map to response DTO
+      const response = MockMapper.toListResponse(listResult);
+
+      res.status(200).json(response);
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({
-          message: "Invalid request",
+          message: "Invalid query parameters",
           errors: error.issues,
         });
         return;
@@ -144,5 +173,5 @@ export class MockController {
         error: error instanceof Error ? error.message : String(error),
       });
     }
-  };
+  }
 }

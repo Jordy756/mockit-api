@@ -1,14 +1,20 @@
 import type { Request, Response } from "express";
+import { injectable, inject } from "inversify";
+import { Get, JsonController, Post, Req, Res } from "routing-controllers";
 import { ZodError } from "zod";
 
 import { MockRecordMapper } from "../../application/mappers/MockRecordMapper.js";
 import type { IMockRecordUseCase } from "../../domain/interfaces/use-cases/IMockRecordUseCase.js";
 import { createMockRecordSchema } from "../../application/dtos/MockRecordDTO.js";
+import { TYPES } from "../di/types.js";
 
+@injectable()
+@JsonController("/api/mock-records")
 export class MockRecordController {
-  constructor(private readonly mockRecordUseCase: IMockRecordUseCase) {}
+  constructor(@inject(TYPES.IMockRecordUseCase) private readonly mockRecordUseCase: IMockRecordUseCase) {}
 
-  public insert = async (req: Request, res: Response): Promise<void> => {
+  @Post("/")
+  public async insert(@Req() req: Request, @Res() res: Response): Promise<void> {
     try {
       const input = createMockRecordSchema.parse(req.body);
       const mockRecord = await this.mockRecordUseCase.insert(MockRecordMapper.toEntity(input));
@@ -29,9 +35,10 @@ export class MockRecordController {
         error: error instanceof Error ? error.message : String(error),
       });
     }
-  };
+  }
 
-  public getAll = async (req: Request, res: Response): Promise<void> => {
+  @Get("/")
+  public async getAll(@Req() req: Request, @Res() res: Response): Promise<void> {
     try {
       const mockRecords = await this.mockRecordUseCase.getAll();
       const response = MockRecordMapper.toResponses(mockRecords);
@@ -51,5 +58,5 @@ export class MockRecordController {
         error: error instanceof Error ? error.message : String(error),
       });
     }
-  };
+  }
 }

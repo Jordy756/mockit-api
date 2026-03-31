@@ -1,5 +1,6 @@
 ---
 import "@styles/global.css";
+import { Font } from "astro:assets";
 
 interface Props {
   title: string;
@@ -18,9 +19,11 @@ const { title, description } = Astro.props;
     <link rel="icon" href="/favicon.ico" />
     <title>{title}</title>
 
+    <Font cssVariable="--font-jetbrains-mono" preload />
+
     <meta name="description" content={description} />
   </head>
-  <body class="bg-neutral-950 text-neutral-50">
+  <body class="bg-neutral-950 text-neutral-50 text-pretty">
     <slot />
   </body>
 </html>

@@ -17,7 +17,7 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-dm-sans);
+  --font-sans: var(--font-jetbrains-mono);
 }
 
 @layer base {
@@ -27,7 +27,7 @@
 
   html {
     scrollbar-width: thin;
-    @apply scroll-pt-32 scroll-smooth;
+    @apply scroll-smooth;
   }
 
   :is(h1, h2, h3, h4, h5, h6) {

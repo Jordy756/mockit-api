@@ -1,31 +1,22 @@
 ---
+import Generate from "@components/icons/Generate.astro";
+import Header from "@components/layout/Header.astro";
+import Sidebar from "@components/layout/Sidebar.astro";
+import SchemaJSON from "@components/sections/SchemaJSON/SchemaJSON.astro";
+import Button from "@components/ui/Button.astro";
 import Layout from "@layouts/Layout.astro";
 ---
 
 <Layout title="My Astro Site" description="A simple Astro site">
-  <div class="relative grid grid-cols-[auto_1fr] grid-rows-[auto_1fr_auto] gap-4 min-h-screen">
-    <aside class="bg-red-100 col-start-1 row-span-3">
-      <nav>
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/about">About</a></li>
-          <li><a href="/contact">Contact</a></li>
-        </ul>
-      </nav>
-    </aside>
-    <header class="bg-red-50 col-start-2 row-start-1 w-full">
-      <button>
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <h1>Mockit</h1>
-    </header>
-    <main class="bg-red-200 col-start-2 row-start-2 w-full h-full">
-      <p>Welcome to Mockit!</p>
+  <div class="relative grid grid-cols-[auto_1fr] grid-rows-[auto_1fr] min-h-screen">
+    <Sidebar />
+    <Header title="schema.json - Editor" />
+    <main class="relative col-start-2 row-start-2 w-full h-full p-4 overflow-x-auto">
+      <SchemaJSON />
+      <Button class="absolute bottom-4 right-4">
+        Generar Datos
+        <Generate width={20} class="text-neutral-950" />
+      </Button>
     </main>
-    <footer class="bg-red-400 col-start-2 row-start-3 w-full">
-      <p>&copy; 2023 Mockit. All rights reserved.</p>
-    </footer>
   </div>
 </Layout>

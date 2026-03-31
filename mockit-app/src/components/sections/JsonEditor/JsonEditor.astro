@@ -9,30 +9,29 @@ const initialJson = `{
 }`;
 ---
 
-<section class="relative h-full flex flex-col gap-4 p-4">
-  <header class="flex justify-between items-center flex-wrap gap-8">
-    <h2 class="text-xl font-semibold">Base JSON</h2>
-    <div class="flex items-center flex-wrap gap-4">
-      <Button id="format-btn" variant="secondary" class="flex-1">Formatear</Button>
-      <Button class="flex-1">
-        Generar Datos
-        <GenerateIcon width={20} class="text-neutral-950" />
-      </Button>
-    </div>
-  </header>
-  <div class="relative flex-1 bg-[#0d1117] border border-neutral-800 overflow-hidden">
-    <textarea
-      id="json-input"
-      spellcheck="false"
-      class="absolute inset-0 p-4 resize-none bg-transparent text-transparent caret-neutral-50 outline-none z-10"
-      >{initialJson}</textarea
-    >
-    <pre
-      id="json-display"
-      aria-hidden="true"
-      class="absolute inset-0 p-4 overflow-auto pointer-events-none whitespace-pre-wrap break-all z-0 text-neutral-50">
-    </pre>
-  </div>
+<section class="relative flex-1 flex flex-col gap-4 bg-[#0d1117] border border-neutral-800 overflow-hidden">
+  <!-- <header class="flex justify-between items-center flex-wrap gap-8">
+    <h2 class="text-xl font-semibold">Base JSON</h2> -->
+  <!-- <div class="flex items-center flex-wrap gap-4"> -->
+  <!-- <Button id="format-btn" variant="secondary" class="flex-1">Formatear</Button>
+       -->
+  <!-- </div>
+  </header> -->
+  <Button class="absolute bottom-4 right-4 z-20">
+    Generar Datos
+    <GenerateIcon width={20} class="text-neutral-950" />
+  </Button>
+  <textarea
+    id="json-input"
+    spellcheck="false"
+    class="absolute inset-0 p-4 resize-none bg-transparent text-transparent caret-neutral-50 outline-none z-10"
+    >{initialJson}</textarea
+  >
+  <pre
+    id="json-display"
+    aria-hidden="true"
+    class="absolute inset-0 p-4 overflow-auto pointer-events-none whitespace-pre-wrap break-all z-0 text-neutral-50">
+  </pre>
 </section>
 
 <script>

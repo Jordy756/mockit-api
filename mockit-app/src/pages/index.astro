@@ -2,6 +2,7 @@
 import Header from "@components/layout/Header.astro";
 import Sidebar from "@components/layout/Sidebar.astro";
 import JsonEditor from "@components/sections/JsonEditor/JsonEditor.astro";
+import LivePreview from "@components/sections/LivePreview/LivePreview.astro";
 import Layout from "@layouts/Layout.astro";
 ---
 
@@ -10,7 +11,10 @@ import Layout from "@layouts/Layout.astro";
     <Sidebar />
     <Header title="schema.json" />
     <main class="col-start-2 row-start-2 w-full h-full overflow-x-auto mesh-gradient">
-      <JsonEditor />
+      <div class="flex flex-wrap gap-4 h-full p-4">
+        <JsonEditor />
+        <LivePreview />
+      </div>
     </main>
   </div>
 </Layout>

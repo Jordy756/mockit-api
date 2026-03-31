@@ -6,7 +6,7 @@ import { copy } from "@scripts/utils/copy";
 const jsonTextarea = document.querySelector("#json-textarea") as HTMLTextAreaElement;
 const jsonDisplay = document.querySelector("#json-display") as HTMLElement;
 
-const formatBtn = document.querySelector("#format-btn") as HTMLButtonElement;
+const formatAndEraseBtn = document.querySelector("#format-and-erase-btn") as HTMLButtonElement;
 const generateMocksBtn = document.querySelector("#generate-mocks-btn") as HTMLButtonElement;
 const copyLinkBtn = document.querySelector("#copy-link-btn") as HTMLButtonElement;
 
@@ -39,9 +39,12 @@ const validateJsonFormat = () => {
     jsonTextarea.value = JSON.stringify(parsed, null, 2);
     update(jsonTextarea);
 
+    livePreviewContent.classList.remove("hidden");
+    livePreviewError.classList.add("hidden");
+
     return true;
   } catch (e) {
-    livePreviewContent.innerHTML = "";
+    livePreviewContent.classList.add("hidden");
     livePreviewError.textContent = "El formato JSON es inválido. Por favor, corrige los errores y vuelve a intentarlo.";
     livePreviewError.classList.remove("hidden");
     copyLinkBtn.classList.add("hidden");
@@ -53,11 +56,10 @@ const validateJsonFormat = () => {
 const handleGenerateMock = async () => {
   if (!validateJsonFormat()) return;
 
-  livePreviewContent.innerHTML = "";
+  livePreviewContent.classList.add("hidden");
   copyLinkBtn.setAttribute("disabled", "true");
   generateMocksBtn.setAttribute("disabled", "true");
   livePreviewSpinner.classList.remove("hidden");
-  livePreviewError.classList.add("hidden");
   copyLinkBtn.classList.add("hidden");
 
   try {
@@ -68,6 +70,7 @@ const handleGenerateMock = async () => {
 
     mockId = data.id;
     livePreviewContent.innerHTML = syntaxHighlight(JSON.stringify(data, null, 2));
+    livePreviewContent.classList.remove("hidden");
     copyLinkBtn.classList.remove("hidden");
     copyLinkBtn.removeAttribute("disabled");
   } catch (error) {
@@ -79,9 +82,56 @@ const handleGenerateMock = async () => {
   }
 };
 
+const handleFormatAndErase = () => {
+  const buttonText = formatAndEraseBtn.textContent?.trim();
+
+  if (buttonText === "Organizar") {
+    if (!validateJsonFormat()) return;
+    formatAndEraseBtn.textContent = "Borrar";
+    return;
+  }
+
+  jsonTextarea.value = `{
+  "name": "Nombre de una persona",
+  "email": "Correo electrónico de prueba",
+  "linkedIn": "Perfil de LinkedIn de prueba"
+}`;
+
+  formatAndEraseBtn.textContent = "Organizar";
+
+  livePreviewContent.innerHTML = `{
+  "id": "abc123",
+  "mocks": [
+    {
+      "id": "abc1234",
+      "name": "Jordy",
+      "email": "jordycastro1756@gmail.com",
+      "linkedIn": "https://www.linkedin.com/in/yordicastro/"
+    },
+    {
+      "id": "abc1235",
+      "name": "Ernesto",
+      "email": "ev402648@gmail.com",
+      "linkedIn": "https://www.linkedin.com/in/ernesto224/"
+    },
+    {
+      "id": "abc1236",
+      "name": "Kenneth",
+      "email": "kennethtorresbrizuela@gmail.com",
+      "linkedIn": "https://www.linkedin.com/in/kennethtorres/"
+    }
+  ],
+  "createdAt": "2026-03-31T08:58:48.372Z",
+  "updatedAt": "2026-03-31T08:58:48.372Z"
+}`;
+
+  update(jsonTextarea);
+  update(livePreviewContent);
+};
+
 jsonTextarea.addEventListener("input", () => update(jsonTextarea));
 jsonTextarea.addEventListener("scroll", updateTextarea);
-formatBtn.addEventListener("click", validateJsonFormat);
+formatAndEraseBtn.addEventListener("click", handleFormatAndErase);
 generateMocksBtn.addEventListener("click", handleGenerateMock);
 copyLinkBtn.addEventListener("click", () => copy(`${API_URL}/${mockId}/mocks/`));
 

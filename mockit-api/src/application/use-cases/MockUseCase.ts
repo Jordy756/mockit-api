@@ -1,5 +1,7 @@
 import { randomUUID } from "node:crypto";
+import { List } from "../../domain/entities/List.js";
 import { Mock } from "../../domain/entities/Mock.js";
+import { RequestOption } from "../../domain/entities/RequestOption.js";
 import { IMockRepository } from "../../domain/interfaces/repositories/IMockRepository.js";
 import { IMockUseCase } from "../../domain/interfaces/use-cases/IMockUseCase.js";
 
@@ -29,7 +31,7 @@ export class MockUseCase implements IMockUseCase {
     return await this.mockRepository.getById(mockRecordId, mockId);
   }
 
-  public async getAll(mockRecordId: string): Promise<Mock[]> {
-    return await this.mockRepository.getAll(mockRecordId);
+  public async getAll(mockRecordId: string, requestOption?: RequestOption): Promise<List<Mock>> {
+    return await this.mockRepository.getAll(mockRecordId, requestOption);
   }
 }

@@ -1,10 +1,20 @@
 ---
+import Header from "@components/layout/Header.astro";
+import Sidebar from "@components/layout/Sidebar.astro";
+import MockCreator from "@components/sections/MockCreator/MockCreator.astro";
 import Layout from "@layouts/Layout.astro";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const title = "Editor JSON con vista previa en vivo usando Astro | Mockit";
+const description =
+  "Aprende a crear un editor JSON con vista previa en vivo utilizando Astro. Sigue esta guía paso a paso para construir una aplicación interactiva y moderna.";
 ---
 
-<Layout title="My Astro Site" description="A simple Astro site">
-  <h1 class="text-3xl font-bold underline">Hello world!</h1>
+<Layout title={title} description={description}>
+  <div class="relative grid grid-cols-[auto_1fr] grid-rows-[auto_1fr] min-h-screen">
+    <Sidebar />
+    <Header title="schema.json" />
+    <main class="col-start-2 row-start-2 w-full h-full overflow-x-auto mesh-gradient">
+      <MockCreator />
+    </main>
+  </div>
 </Layout>

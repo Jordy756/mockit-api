@@ -1,16 +1,16 @@
 ---
 import Header from "@components/layout/Header.astro";
 import Sidebar from "@components/layout/Sidebar.astro";
-import SchemaJSON from "@components/sections/SchemaJSON/SchemaJSON.astro";
+import JsonEditor from "@components/sections/JsonEditor/JsonEditor.astro";
 import Layout from "@layouts/Layout.astro";
 ---
 
 <Layout title="My Astro Site" description="A simple Astro site">
   <div class="relative grid grid-cols-[auto_1fr] grid-rows-[auto_1fr] min-h-screen">
     <Sidebar />
-    <Header title="schema.json - Editor" />
-    <main class="col-start-2 row-start-2 w-full h-full p-4 overflow-x-auto">
-      <SchemaJSON />
+    <Header title="schema.json" />
+    <main class="col-start-2 row-start-2 w-full h-full overflow-x-auto mesh-gradient">
+      <JsonEditor />
     </main>
   </div>
 </Layout>
